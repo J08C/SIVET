@@ -1,0 +1,1811 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>SIVET - Dashboard</title>
+
+    <!-- Bootstrap -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f4f8fb;
+            color: #17365d;
+        }
+
+
+        /* =====================================================
+           MAIN
+        ===================================================== */
+
+        .main {
+            margin-left: 305px;
+            min-height: 100vh;
+        }
+
+
+        /* =====================================================
+           TOPBAR
+        ===================================================== */
+
+        .topbar {
+            height: 75px;
+            background: white;
+            border-bottom: 1px solid #e1e9ef;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 30px;
+        }
+
+
+        .search {
+            width: 430px;
+
+            background: #f2f6f9;
+            border-radius: 8px;
+
+            padding: 11px 16px;
+
+            color: #8a9aaa;
+        }
+
+
+        .search i {
+            margin-right: 10px;
+        }
+
+
+        .user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+
+        .notification {
+            font-size: 22px;
+            margin-right: 18px;
+            position: relative;
+        }
+
+
+        .notification span {
+            position: absolute;
+
+            top: -7px;
+            right: -7px;
+
+            background: #f26b38;
+            color: white;
+
+            width: 19px;
+            height: 19px;
+
+            border-radius: 50%;
+
+            text-align: center;
+            font-size: 11px;
+
+            padding-top: 2px;
+        }
+
+
+        .avatar {
+            width: 43px;
+            height: 43px;
+
+            border-radius: 50%;
+
+            background: #07345b;
+            color: white;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            font-weight: bold;
+        }
+
+
+        .user-info strong {
+            display: block;
+            font-size: 14px;
+        }
+
+
+        .user-info small {
+            color: #8191a0;
+        }
+
+
+        /* =====================================================
+           DROPDOWN
+        ===================================================== */
+
+        .dropdown {
+            position: relative;
+        }
+
+
+        .user-button {
+            display: flex;
+            align-items: center;
+
+            gap: 12px;
+
+            border: none;
+            background: transparent;
+
+            cursor: pointer;
+
+            padding: 5px;
+
+            color: #17365d;
+        }
+
+
+        .user-button:hover {
+            opacity: 0.9;
+        }
+
+
+        .user-dropdown {
+            display: none;
+
+            position: absolute;
+
+            right: 0;
+            top: 55px;
+
+            width: 210px;
+
+            background: white;
+
+            border-radius: 10px;
+
+            box-shadow:
+                0 5px 20px rgba(0,0,0,0.15);
+
+            padding: 10px;
+
+            z-index: 2000;
+        }
+
+
+        .user-dropdown.show {
+            display: block;
+        }
+
+
+        .dropdown-title {
+            padding: 8px 10px;
+
+            color: #17365d;
+
+            font-weight: 600;
+        }
+
+
+        .dropdown-title i {
+            margin-right: 7px;
+        }
+
+
+        .dropdown-divider {
+            border-top: 1px solid #e5e9ed;
+            margin: 5px 0;
+        }
+
+
+        .dropdown-item {
+            width: 100%;
+
+            border: none;
+
+            background: transparent;
+
+            text-align: left;
+
+            padding: 10px;
+
+            border-radius: 7px;
+
+            cursor: pointer;
+
+            color: #17365d;
+        }
+
+
+        .dropdown-item:hover {
+            background: #f2f6f9;
+        }
+
+
+        .dropdown-item i {
+            margin-right: 8px;
+        }
+
+
+        .dropdown-item.logout {
+            color: #df3d32;
+        }
+
+
+        /* =====================================================
+           CONTENT
+        ===================================================== */
+
+        .content {
+            padding: 28px 30px;
+        }
+
+
+        .welcome {
+            display: flex;
+
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 25px;
+        }
+
+
+        .welcome h1 {
+            margin: 0;
+
+            font-size: 31px;
+
+            font-weight: 700;
+        }
+
+
+        .welcome p {
+            margin: 4px 0 0;
+
+            color: #617386;
+        }
+
+
+        .date {
+            text-align: right;
+
+            color: #63778a;
+
+            font-size: 14px;
+        }
+
+
+        /* =====================================================
+           ESTADÍSTICAS
+        ===================================================== */
+
+        .stat-card {
+            border: 0;
+
+            border-radius: 12px;
+
+            background: white;
+
+            padding: 19px;
+
+            min-height: 125px;
+
+            box-shadow:
+                0 2px 8px rgba(30,60,90,0.06);
+        }
+
+
+        .stat-icon {
+            width: 57px;
+            height: 57px;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            justify-content: center;
+            align-items: center;
+
+            font-size: 27px;
+
+            color: white;
+
+            float: left;
+
+            margin-right: 15px;
+        }
+
+
+        .green {
+            background: #0caf91;
+        }
+
+
+        .blue {
+            background: #159bd7;
+        }
+
+
+        .orange {
+            background: #f6a12a;
+        }
+
+
+        .red {
+            background: #f2643b;
+        }
+
+
+        .stat-title {
+            color: #607488;
+
+            font-size: 14px;
+        }
+
+
+        .stat-value {
+            font-size: 25px;
+
+            font-weight: 700;
+
+            color: #102f50;
+
+            margin-top: 3px;
+        }
+
+
+        .stat-change {
+            font-size: 12px;
+
+            color: #15935c;
+
+            margin-top: 4px;
+        }
+
+
+        /* =====================================================
+           PANELS
+        ===================================================== */
+
+        .panel {
+            background: white;
+
+            border-radius: 12px;
+
+            padding: 20px;
+
+            box-shadow:
+                0 2px 8px rgba(30,60,90,0.06);
+        }
+
+
+        .panel-title {
+            display: flex;
+
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 18px;
+        }
+
+
+        .panel-title h5 {
+            margin: 0;
+
+            font-weight: 700;
+
+            color: #15395e;
+        }
+
+
+        .panel-title i {
+            margin-right: 8px;
+        }
+
+
+        /* =====================================================
+           GRÁFICO
+        ===================================================== */
+
+        .chart {
+            height: 245px;
+
+            display: flex;
+
+            align-items: flex-end;
+
+            gap: 25px;
+
+            padding: 15px 15px 30px;
+
+            border-bottom: 1px solid #dce6ed;
+
+            position: relative;
+        }
+
+
+        .chart::before {
+            content: "";
+
+            position: absolute;
+
+            left: 0;
+            right: 0;
+
+            top: 30px;
+
+            height: 1px;
+
+            background: #edf2f5;
+
+            box-shadow:
+                0 45px #edf2f5,
+                0 90px #edf2f5,
+                0 135px #edf2f5;
+        }
+
+
+        .bar {
+            flex: 1;
+
+            background: #159bb8;
+
+            border-radius: 5px 5px 0 0;
+
+            position: relative;
+
+            z-index: 1;
+        }
+
+
+        .bar small {
+            position: absolute;
+
+            bottom: -25px;
+
+            width: 100%;
+
+            text-align: center;
+
+            color: #75889a;
+
+            font-size: 11px;
+        }
+
+
+        /* =====================================================
+           ACCIONES RÁPIDAS
+        ===================================================== */
+
+        .quick-btn {
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 14px 16px;
+
+            border-radius: 8px;
+
+            color: white;
+
+            text-decoration: none;
+
+            margin-bottom: 12px;
+
+            font-weight: 600;
+        }
+
+
+        .quick-btn:hover {
+            color: white;
+
+            opacity: 0.9;
+        }
+
+
+        .quick-blue {
+            background: #087ca8;
+        }
+
+
+        .quick-cyan {
+            background: #13a2ba;
+        }
+
+
+        .quick-orange {
+            background: #f47721;
+        }
+
+
+        .quick-btn i {
+            font-size: 21px;
+        }
+
+
+        /* =====================================================
+           TABLA
+        ===================================================== */
+
+        .table thead th {
+            color: #597083;
+
+            font-size: 13px;
+
+            background: #f4f7f9;
+        }
+
+
+        .table td {
+            vertical-align: middle;
+
+            font-size: 13px;
+        }
+
+
+        .stock-low {
+            color: #e34235;
+
+            font-weight: bold;
+        }
+
+
+        .badge-low {
+            background: #ffd9d5;
+
+            color: #d93b31;
+
+            padding: 6px 10px;
+
+            border-radius: 20px;
+        }
+
+
+        /* =====================================================
+           ACTIVIDAD
+        ===================================================== */
+
+        .activity {
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            padding: 10px 0;
+
+            border-bottom: 1px solid #edf1f4;
+        }
+
+
+        .activity:last-child {
+            border-bottom: 0;
+        }
+
+
+        .activity-icon {
+            width: 38px;
+            height: 38px;
+
+            border-radius: 50%;
+
+            background: #e5f6f3;
+
+            color: #0caf91;
+
+            display: flex;
+
+            justify-content: center;
+            align-items: center;
+        }
+
+
+        .activity-text {
+            flex: 1;
+        }
+
+
+        .activity-text strong {
+            display: block;
+
+            font-size: 13px;
+        }
+
+
+        .activity-text small {
+            color: #788b9a;
+        }
+
+
+        .activity-time {
+            font-size: 11px;
+
+            color: #91a0ad;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 1000px) {
+
+            .main {
+                margin-left: 305px;
+            }
+
+            .search {
+                width: 300px;
+            }
+
+        }
+
+
+        @media (max-width: 768px) {
+
+            .main {
+                margin-left: 0;
+            }
+
+            .topbar {
+                height: auto;
+
+                padding: 15px;
+
+                gap: 15px;
+
+                flex-wrap: wrap;
+            }
+
+            .search {
+                width: 100%;
+            }
+
+            .content {
+                padding: 18px;
+            }
+
+            .welcome {
+                display: block;
+            }
+
+            .date {
+                text-align: left;
+
+                margin-top: 10px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     SIDEBAR ÚNICO
+===================================================== -->
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<main class="main">
+
+
+    <!-- =================================================
+         TOPBAR
+    ================================================== -->
+
+    <header class="topbar">
+
+
+        <div class="search">
+
+            <i class="bi bi-search"></i>
+
+            Buscar productos, clientes, ventas...
+
+        </div>
+
+
+        <div class="user">
+
+
+            <div class="notification">
+
+                <i class="bi bi-bell"></i>
+
+                <span>
+                    3
+                </span>
+
+            </div>
+
+
+            <div class="dropdown">
+
+
+                <button
+                    class="user-button"
+                    type="button"
+                    onclick="toggleUserMenu()">
+
+
+                    <!-- AVATAR -->
+
+                    <div
+                        class="avatar"
+                        th:text="${session.usuario != null
+                            ? session.usuario.nombreCompleto.substring(0,1).toUpperCase()
+                            : 'U'}">
+
+                        A
+
+                    </div>
+
+
+                    <!-- DATOS -->
+
+                    <div class="user-info">
+
+
+                        <strong
+                            th:text="${session.usuario != null
+                                ? session.usuario.nombreCompleto
+                                : 'Usuario'}">
+
+                            Administrador SIVET
+
+                        </strong>
+
+
+                        <small
+                            th:text="${session.usuario != null
+                                ? (session.usuario.idRol == 1
+                                    ? 'Administrador'
+                                    : session.usuario.idRol == 2
+                                        ? 'Vendedor'
+                                        : 'Almacenero')
+                                : 'Usuario'}">
+
+                            Administrador
+
+                        </small>
+
+
+                    </div>
+
+
+                    <i class="bi bi-chevron-down"></i>
+
+
+                </button>
+
+
+                <!-- DROPDOWN -->
+
+                <div
+                    id="userMenu"
+                    class="user-dropdown">
+
+
+                    <div class="dropdown-title">
+
+                        <i class="bi bi-person-circle"></i>
+
+                        Cuenta
+
+                    </div>
+
+
+                    <div class="dropdown-divider"></div>
+
+
+                    <a
+                        href="/"
+                        class="dropdown-item text-decoration-none">
+
+                        <i class="bi bi-speedometer2"></i>
+
+                        Dashboard
+
+                    </a>
+
+
+                    <form
+                        th:action="@{/logout}"
+                        method="post">
+
+                        <button
+                            type="submit"
+                            class="dropdown-item logout">
+
+                            <i class="bi bi-box-arrow-right"></i>
+
+                            Cerrar sesión
+
+                        </button>
+
+                    </form>
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </header>
+
+
+    <!-- =================================================
+         CONTENT
+    ================================================== -->
+
+    <section class="content">
+
+
+        <!-- BIENVENIDA -->
+
+        <div class="welcome">
+
+
+            <div>
+
+                <h1>
+                    ¡Bienvenido a SIVET!
+                </h1>
+
+                <p>
+                    Controla tu inventario, gestiona tus ventas
+                    y haz crecer tu bodega.
+                </p>
+
+            </div>
+
+
+            <div class="date">
+
+                <i class="bi bi-calendar3"></i>
+
+                Hoy
+
+                <br>
+
+                <small>
+                    Un buen día para hacer grandes ventas
+                </small>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =================================================
+             ESTADÍSTICAS
+        ================================================== -->
+
+        <div class="row g-3 mb-4">
+
+
+            <!-- VENTAS -->
+
+            <div class="col-md-6 col-xl-3">
+
+                <div class="stat-card">
+
+
+                    <div class="stat-icon green">
+
+                        <i class="bi bi-currency-dollar"></i>
+
+                    </div>
+
+
+                    <div class="stat-title">
+                        Ventas del día
+                    </div>
+
+
+                    <div class="stat-value">
+                        S/ 1,250.00
+                    </div>
+
+
+                    <div class="stat-change">
+                        ↑ +12% vs. ayer
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- COMPRAS -->
+
+            <div class="col-md-6 col-xl-3">
+
+                <div class="stat-card">
+
+
+                    <div class="stat-icon blue">
+
+                        <i class="bi bi-cart"></i>
+
+                    </div>
+
+
+                    <div class="stat-title">
+                        Compras del mes
+                    </div>
+
+
+                    <div class="stat-value">
+                        S/ 3,800.00
+                    </div>
+
+
+                    <div class="stat-change">
+                        ↑ +8% vs. mes anterior
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- STOCK -->
+
+            <div class="col-md-6 col-xl-3">
+
+                <div class="stat-card">
+
+
+                    <div class="stat-icon orange">
+
+                        <i class="bi bi-box-seam"></i>
+
+                    </div>
+
+
+                    <div class="stat-title">
+                        Productos en stock
+                    </div>
+
+
+                    <div class="stat-value">
+                        342
+                    </div>
+
+
+                    <div class="stat-change">
+                        ↑ +5% vs. mes anterior
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- ALERTAS -->
+
+            <div class="col-md-6 col-xl-3">
+
+                <div class="stat-card">
+
+
+                    <div class="stat-icon red">
+
+                        <i class="bi bi-exclamation-triangle"></i>
+
+                    </div>
+
+
+                    <div class="stat-title">
+                        Alertas de stock mínimo
+                    </div>
+
+
+                    <div class="stat-value">
+                        8
+                    </div>
+
+
+                    <div class="stat-change">
+                        ↑ +2 productos críticos
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =================================================
+             GRÁFICO + ACCIONES
+        ================================================== -->
+
+        <div class="row g-3 mb-4">
+
+
+            <!-- GRÁFICO -->
+
+            <div class="col-lg-7">
+
+                <div class="panel">
+
+
+                    <div class="panel-title">
+
+                        <h5>
+
+                            <i class="bi bi-bar-chart-fill"></i>
+
+                            Tendencia de ventas
+
+                        </h5>
+
+
+                        <select
+                            class="form-select form-select-sm"
+                            style="width:130px;">
+
+                            <option>
+                                Últimos 7 días
+                            </option>
+
+                            <option>
+                                Este mes
+                            </option>
+
+                        </select>
+
+
+                    </div>
+
+
+                    <div class="chart">
+
+
+                        <div
+                            class="bar"
+                            style="height:35%;">
+
+                            <small>
+                                19 Abr
+                            </small>
+
+                        </div>
+
+
+                        <div
+                            class="bar"
+                            style="height:43%;">
+
+                            <small>
+                                20 Abr
+                            </small>
+
+                        </div>
+
+
+                        <div
+                            class="bar"
+                            style="height:58%;">
+
+                            <small>
+                                21 Abr
+                            </small>
+
+                        </div>
+
+
+                        <div
+                            class="bar"
+                            style="height:57%;">
+
+                            <small>
+                                22 Abr
+                            </small>
+
+                        </div>
+
+
+                        <div
+                            class="bar"
+                            style="height:73%;">
+
+                            <small>
+                                23 Abr
+                            </small>
+
+                        </div>
+
+
+                        <div
+                            class="bar"
+                            style="height:81%;">
+
+                            <small>
+                                24 Abr
+                            </small>
+
+                        </div>
+
+
+                        <div
+                            class="bar"
+                            style="height:95%;">
+
+                            <small>
+                                25 Abr
+                            </small>
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- ACCIONES -->
+
+            <div class="col-lg-5">
+
+                <div class="panel">
+
+
+                    <div class="panel-title">
+
+                        <h5>
+
+                            <i class="bi bi-lightning-charge-fill"></i>
+
+                            Acciones rápidas
+
+                        </h5>
+
+                    </div>
+
+
+                    <!-- ADMINISTRADOR -->
+
+                    <div
+                        th:if="${session.usuario != null and session.usuario.idRol == 1}">
+
+
+                        <!-- NUEVA VENTA -->
+
+                        <a
+                            href="/ventas/nueva"
+                            class="quick-btn quick-blue">
+
+                            <span>
+
+                                <i class="bi bi-cart3"></i>
+
+                                Nueva venta
+
+                            </span>
+
+                            <i class="bi bi-chevron-right"></i>
+
+                        </a>
+
+
+                        <!-- NUEVA COMPRA -->
+
+                        <a
+                            href="/compras/nuevo"
+                            class="quick-btn quick-cyan">
+
+                            <span>
+
+                                <i class="bi bi-receipt"></i>
+
+                                Registrar compra
+
+                            </span>
+
+                            <i class="bi bi-chevron-right"></i>
+
+                        </a>
+
+
+                        <!-- NUEVO PRODUCTO -->
+
+                        <a
+                            href="/productos/nuevo"
+                            class="quick-btn quick-orange">
+
+                            <span>
+
+                                <i class="bi bi-plus-lg"></i>
+
+                                Agregar producto
+
+                            </span>
+
+                            <i class="bi bi-chevron-right"></i>
+
+                        </a>
+
+
+                    </div>
+
+
+                    <!-- VENDEDOR -->
+
+                    <div
+                        th:if="${session.usuario != null and session.usuario.idRol == 2}">
+
+
+                        <a
+                            href="/ventas/nueva"
+                            class="quick-btn quick-blue">
+
+                            <span>
+
+                                <i class="bi bi-cart3"></i>
+
+                                Nueva venta
+
+                            </span>
+
+                            <i class="bi bi-chevron-right"></i>
+
+                        </a>
+
+
+                        <a
+                            href="/clientes/nuevo"
+                            class="quick-btn quick-orange">
+
+                            <span>
+
+                                <i class="bi bi-person-plus"></i>
+
+                                Nuevo cliente
+
+                            </span>
+
+                            <i class="bi bi-chevron-right"></i>
+
+                        </a>
+
+
+                    </div>
+
+
+                    <!-- ALMACENERO -->
+
+                    <div
+                        th:if="${session.usuario != null and session.usuario.idRol == 3}">
+
+
+                        <a
+                            href="/compras/nueva"
+                            class="quick-btn quick-cyan">
+
+                            <span>
+
+                                <i class="bi bi-receipt"></i>
+
+                                Registrar compra
+
+                            </span>
+
+                            <i class="bi bi-chevron-right"></i>
+
+                        </a>
+
+
+                        <a
+                            href="/productos/nuevo"
+                            class="quick-btn quick-orange">
+
+                            <span>
+
+                                <i class="bi bi-plus-lg"></i>
+
+                                Agregar producto
+
+                            </span>
+
+                            <i class="bi bi-chevron-right"></i>
+
+                        </a>
+
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =================================================
+             STOCK + ACTIVIDAD
+        ================================================== -->
+
+        <div class="row g-3">
+
+
+            <!-- STOCK MÍNIMO -->
+
+            <div class="col-lg-7">
+
+                <div class="panel">
+
+
+                    <div class="panel-title">
+
+
+                        <h5>
+
+                            <i
+                                class="bi bi-exclamation-triangle text-warning">
+                            </i>
+
+                            Productos con stock mínimo
+
+                        </h5>
+
+
+                        <a
+                            href="/productos"
+                            class="text-primary">
+
+                            Ver todos
+
+                        </a>
+
+
+                    </div>
+
+
+                    <div class="table-responsive">
+
+                        <table class="table">
+
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        Producto
+                                    </th>
+
+                                    <th>
+                                        Categoría
+                                    </th>
+
+                                    <th>
+                                        Stock actual
+                                    </th>
+
+                                    <th>
+                                        Stock mínimo
+                                    </th>
+
+                                    <th>
+                                        Estado
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+
+                                <tr>
+
+                                    <td>
+                                        Aceite Primor 1L
+                                    </td>
+
+                                    <td>
+                                        Abarrotes
+                                    </td>
+
+                                    <td class="stock-low">
+                                        3
+                                    </td>
+
+                                    <td>
+                                        10
+                                    </td>
+
+                                    <td>
+
+                                        <span class="badge-low">
+                                            Stock bajo
+                                        </span>
+
+                                    </td>
+
+                                </tr>
+
+
+                                <tr>
+
+                                    <td>
+                                        Arroz Costeño 1kg
+                                    </td>
+
+                                    <td>
+                                        Abarrotes
+                                    </td>
+
+                                    <td class="stock-low">
+                                        5
+                                    </td>
+
+                                    <td>
+                                        15
+                                    </td>
+
+                                    <td>
+
+                                        <span class="badge-low">
+                                            Stock bajo
+                                        </span>
+
+                                    </td>
+
+                                </tr>
+
+
+                                <tr>
+
+                                    <td>
+                                        Leche Gloria 1L
+                                    </td>
+
+                                    <td>
+                                        Lácteos
+                                    </td>
+
+                                    <td class="stock-low">
+                                        4
+                                    </td>
+
+                                    <td>
+                                        12
+                                    </td>
+
+                                    <td>
+
+                                        <span class="badge-low">
+                                            Stock bajo
+                                        </span>
+
+                                    </td>
+
+                                </tr>
+
+
+                                <tr>
+
+                                    <td>
+                                        Papel Higiénico Elite
+                                    </td>
+
+                                    <td>
+                                        Higiene
+                                    </td>
+
+                                    <td class="stock-low">
+                                        2
+                                    </td>
+
+                                    <td>
+                                        10
+                                    </td>
+
+                                    <td>
+
+                                        <span class="badge-low">
+                                            Stock bajo
+                                        </span>
+
+                                    </td>
+
+                                </tr>
+
+
+                            </tbody>
+
+
+                        </table>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- ACTIVIDAD -->
+
+            <div class="col-lg-5">
+
+                <div class="panel">
+
+
+                    <div class="panel-title">
+
+                        <h5>
+
+                            <i class="bi bi-clock"></i>
+
+                            Actividad reciente
+
+                        </h5>
+
+
+                        <a
+                            href="/inventario"
+                            class="text-primary">
+
+                            Ver todas
+
+                        </a>
+
+                    </div>
+
+
+                    <!-- ACTIVIDAD 1 -->
+
+                    <div class="activity">
+
+
+                        <div class="activity-icon">
+
+                            <i class="bi bi-cart"></i>
+
+                        </div>
+
+
+                        <div class="activity-text">
+
+                            <strong>
+                                Venta registrada
+                            </strong>
+
+                            <small>
+                                Venta #97 - S/ 25.00
+                            </small>
+
+                        </div>
+
+
+                        <div class="activity-time">
+                            Hace poco
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- ACTIVIDAD 2 -->
+
+                    <div class="activity">
+
+
+                        <div class="activity-icon">
+
+                            <i class="bi bi-receipt"></i>
+
+                        </div>
+
+
+                        <div class="activity-text">
+
+                            <strong>
+                                Compra registrada
+                            </strong>
+
+                            <small>
+                                Compra #81 - S/ 50.00
+                            </small>
+
+                        </div>
+
+
+                        <div class="activity-time">
+                            Hoy
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- ACTIVIDAD 3 -->
+
+                    <div class="activity">
+
+
+                        <div class="activity-icon">
+
+                            <i class="bi bi-box"></i>
+
+                        </div>
+
+
+                        <div class="activity-text">
+
+                            <strong>
+                                Movimiento de inventario
+                            </strong>
+
+                            <small>
+                                Entrada de 5 unidades
+                            </small>
+
+                        </div>
+
+
+                        <div class="activity-time">
+                            Hoy
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- ACTIVIDAD 4 -->
+
+                    <div class="activity">
+
+
+                        <div class="activity-icon">
+
+                            <i class="bi bi-box-arrow-down"></i>
+
+                        </div>
+
+
+                        <div class="activity-text">
+
+                            <strong>
+                                Movimiento de inventario
+                            </strong>
+
+                            <small>
+                                Salida de 2 unidades
+                            </small>
+
+                        </div>
+
+
+                        <div class="activity-time">
+                            Hoy
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+    </section>
+
+
+</main>
+
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
+
+<script>
+
+
+    function toggleUserMenu() {
+
+        const menu =
+            document.getElementById("userMenu");
+
+        if (menu) {
+
+            menu.classList.toggle("show");
+
+        }
+
+    }
+
+
+    document.addEventListener(
+        "click",
+        function(event) {
+
+            const dropdown =
+                document.querySelector(".dropdown");
+
+            const menu =
+                document.getElementById("userMenu");
+
+
+            if (
+                dropdown &&
+                menu &&
+                !dropdown.contains(event.target)
+            ) {
+
+                menu.classList.remove("show");
+
+            }
+
+        }
+    );
+
+
+</script>
+
+
+</body>
+
+</html>

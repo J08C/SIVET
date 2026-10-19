@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SIVET - Nueva venta</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f4f8fb;
+            color: #17365d;
+        }
+
+        /* =========================
+           SIDEBAR
+        ========================= */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 265px;
+            height: 100vh;
+            background: linear-gradient(180deg, #07345b, #062d4e);
+            color: white;
+            padding: 22px 14px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 12px 25px;
+        }
+
+        .logo-icon {
+            font-size: 38px;
+            color: #ff8c00;
+        }
+
+        .logo h2 {
+            margin: 0;
+            font-size: 27px;
+            font-weight: 700;
+        }
+
+        .logo small {
+            color: #d8e7f3;
+            font-size: 11px;
+        }
+
+        .menu a {
+            display: flex;
+            align-items: center;
+            gap: 17px;
+            color: #dce9f3;
+            text-decoration: none;
+            padding: 13px 16px;
+            margin-bottom: 5px;
+            border-radius: 9px;
+            font-size: 15px;
+            transition: 0.2s;
+        }
+
+        .menu a:hover,
+        .menu a.active {
+            background: #0b9fc1;
+            color: white;
+        }
+
+        .menu i {
+            font-size: 21px;
+            width: 25px;
+        }
+
+        .sidebar-footer {
+            margin: 20px 10px 5px;
+            border-top: 1px solid rgba(255,255,255,0.15);
+            padding-top: 18px;
+            color: #b9ccda;
+            font-size: 12px;
+        }
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        .main {
+            margin-left: 265px;
+            min-height: 100vh;
+        }
+
+        /* =========================
+           TOPBAR
+        ========================= */
+
+        .topbar {
+            height: 75px;
+            background: white;
+            border-bottom: 1px solid #e1e9ef;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 35px;
+        }
+
+        .search {
+            width: 465px;
+            background: #f2f6f9;
+            border-radius: 8px;
+            padding: 11px 16px;
+            color: #8a9aaa;
+        }
+
+        .user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 43px;
+            height: 43px;
+            border-radius: 50%;
+
+            background: #07345b;
+            color: white;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            font-weight: bold;
+        }
+
+        .user-info strong {
+            color: #07345b;
+        }
+
+        .user-info small {
+            color: #687b8d;
+        }
+
+        /* =========================
+           CONTENT
+        ========================= */
+
+        .content {
+            padding: 35px 55px 50px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 25px;
+        }
+
+        .page-header h1 {
+            margin: 0;
+            font-size: 32px;
+            font-weight: 700;
+            color: #17365d;
+        }
+
+        .page-header p {
+            margin: 6px 0 0;
+            color: #687b8d;
+            font-size: 16px;
+        }
+
+        /* =========================
+           FORM PANEL
+        ========================= */
+
+        .form-panel {
+            background: white;
+            border-radius: 13px;
+            padding: 30px 32px;
+
+            box-shadow: 0 2px 10px rgba(30, 60, 90, 0.07);
+        }
+
+        .info-box {
+            background: #eef9fc;
+            border-left: 4px solid #0b9fc1;
+
+            padding: 14px 17px;
+            border-radius: 7px;
+
+            color: #41647f;
+            margin-bottom: 28px;
+        }
+
+        .info-box i {
+            color: #0b9fc1;
+            margin-right: 5px;
+        }
+
+        /* =========================
+           FORM
+        ========================= */
+
+        .form-label {
+            font-weight: 600;
+            color: #17365d;
+            margin-bottom: 8px;
+        }
+
+        .form-control,
+        .form-select {
+            min-height: 48px;
+            border: 1px solid #d8e2e9;
+            border-radius: 8px;
+            color: #263f55;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #0b9fc1;
+            box-shadow: 0 0 0 0.2rem rgba(11, 159, 193, 0.12);
+        }
+
+        .input-group-text {
+            background: #f1f5f8;
+            border-color: #d8e2e9;
+            color: #17365d;
+            font-weight: 600;
+        }
+
+        .form-text {
+            color: #687b8d;
+            margin-top: 6px;
+        }
+
+        .field {
+            margin-bottom: 24px;
+        }
+
+        /* =========================
+           PRODUCT INFORMATION
+        ========================= */
+
+        .product-info {
+            margin-top: 5px;
+            padding: 14px 16px;
+
+            background: #f7fafc;
+            border: 1px solid #e2ebf0;
+            border-radius: 8px;
+
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            color: #61778a;
+            font-size: 14px;
+        }
+
+        .product-info i {
+            color: #0b9fc1;
+            font-size: 18px;
+        }
+
+        /* =========================
+           SUMMARY
+        ========================= */
+
+        .summary-card {
+            background: #f7fafc;
+            border: 1px solid #e1e9ef;
+            border-radius: 10px;
+            padding: 22px;
+            height: 100%;
+        }
+
+        .summary-title {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+
+            color: #17365d;
+            font-weight: 700;
+            font-size: 18px;
+
+            margin-bottom: 20px;
+        }
+
+        .summary-title i {
+            color: #0b9fc1;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+
+            padding: 10px 0;
+            border-bottom: 1px solid #e5edf2;
+
+            color: #687b8d;
+        }
+
+        .summary-row strong {
+            color: #17365d;
+        }
+
+        .summary-total {
+            margin-top: 14px;
+            padding-top: 15px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .summary-total span {
+            color: #17365d;
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        .summary-total strong {
+            color: #f47721;
+            font-size: 27px;
+        }
+
+        /* =========================
+           BUTTONS
+        ========================= */
+
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+
+            margin-top: 28px;
+            padding-top: 24px;
+
+            border-top: 1px solid #e5edf2;
+        }
+
+        .btn-cancel {
+            border: 1px solid #ccd8e0;
+            background: white;
+            color: #536b7e;
+
+            padding: 11px 22px;
+            border-radius: 8px;
+            text-decoration: none;
+
+            font-weight: 600;
+        }
+
+        .btn-cancel:hover {
+            background: #f2f6f9;
+            color: #17365d;
+        }
+
+        .btn-save {
+            border: none;
+            background: #f47721;
+            color: white;
+
+            padding: 11px 24px;
+            border-radius: 8px;
+
+            font-weight: 600;
+        }
+
+        .btn-save:hover {
+            background: #df681b;
+            color: white;
+        }
+
+        .btn-save i,
+        .btn-cancel i {
+            margin-right: 6px;
+        }
+
+        /* =========================
+           ERROR
+        ========================= */
+
+        .error-box {
+            background: #fff1f0;
+            border-left: 4px solid #df3d32;
+
+            color: #a82c25;
+
+            padding: 14px 17px;
+            border-radius: 7px;
+
+            margin-bottom: 25px;
+        }
+
+        .error-box i {
+            margin-right: 6px;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 1000px) {
+
+            .sidebar {
+                width: 220px;
+            }
+
+            .main {
+                margin-left: 220px;
+            }
+
+            .content {
+                padding: 30px;
+            }
+
+            .search {
+                width: 350px;
+            }
+        }
+
+        @media (max-width: 768px) {
+
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .topbar {
+                height: auto;
+                padding: 15px;
+                gap: 15px;
+                flex-wrap: wrap;
+            }
+
+            .search {
+                width: 100%;
+            }
+
+            .content {
+                padding: 25px 15px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .form-panel {
+                padding: 22px;
+            }
+
+            .summary-card {
+                margin-top: 10px;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+<!-- =========================
+     SIDEBAR
+========================= -->
+
+<aside class="sidebar">
+
+    <div class="logo">
+
+        <div class="logo-icon">
+            <i class="bi bi-cart3"></i>
+        </div>
+
+        <div>
+            <h2>SIVET</h2>
+            <small>Sistema de Inventario y Ventas</small>
+        </div>
+
+    </div>
+
+    <nav class="menu">
+
+        <a href="/">
+            <i class="bi bi-house-fill"></i>
+            Dashboard
+        </a>
+
+        <a href="/productos">
+            <i class="bi bi-box"></i>
+            Productos
+        </a>
+
+        <a href="/categorias">
+            <i class="bi bi-tag"></i>
+            Categorías
+        </a>
+
+        <a href="/ventas" class="active">
+            <i class="bi bi-cart3"></i>
+            Ventas
+        </a>
+
+        <a href="/compras">
+            <i class="bi bi-receipt"></i>
+            Compras
+        </a>
+
+        <a href="/clientes">
+            <i class="bi bi-people"></i>
+            Clientes
+        </a>
+
+        <a href="/proveedores">
+            <i class="bi bi-truck"></i>
+            Proveedores
+        </a>
+
+        <a href="/inventario">
+            <i class="bi bi-boxes"></i>
+            Inventario
+        </a>
+
+        <a href="#">
+            <i class="bi bi-bar-chart-fill"></i>
+            Reportes
+        </a>
+
+        <a href="#">
+            <i class="bi bi-person"></i>
+            Usuarios
+        </a>
+
+        <a href="#">
+            <i class="bi bi-gear-fill"></i>
+            Configuración
+        </a>
+
+    </nav>
+
+    <div class="sidebar-footer">
+
+        <strong>SIVET v1.0.0</strong>
+
+        <br>
+
+        <i class="bi bi-shop"></i>
+        Tu bodega, siempre organizada
+
+    </div>
+
+</aside>
+
+
+<!-- =========================
+     MAIN
+========================= -->
+
+<main class="main">
+
+    <!-- TOPBAR -->
+
+    <header class="topbar">
+
+        <div class="search">
+
+            <i class="bi bi-search"></i>
+
+            Buscar productos, clientes, ventas...
+
+        </div>
+
+        <div class="user">
+
+            <i class="bi bi-bell fs-5"></i>
+
+            <div class="avatar">
+                JP
+            </div>
+
+            <div class="user-info">
+
+                <strong>
+                    Administrador SIVET
+                </strong>
+
+                <br>
+
+                <small>
+                    Administrador
+                </small>
+
+            </div>
+
+            <i class="bi bi-chevron-down"></i>
+
+        </div>
+
+    </header>
+
+
+    <!-- =========================
+         CONTENT
+    ========================= -->
+
+    <section class="content">
+
+        <!-- HEADER -->
+
+        <div class="page-header">
+
+            <div>
+
+                <h1>
+                    Nueva venta
+                </h1>
+
+                <p>
+                    Registra una nueva venta y descuenta automáticamente el stock del producto.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- FORM -->
+
+        <div class="form-panel">
+
+            <!-- INFORMATION -->
+
+            <div class="info-box">
+
+                <i class="bi bi-info-circle"></i>
+
+                Selecciona el producto, indica la cantidad y registra la venta.
+                El precio se obtiene automáticamente y el stock se actualizará.
+
+            </div>
+
+
+            <!-- ERROR -->
+
+            <div
+                th:if="${error}"
+                class="error-box">
+
+                <i class="bi bi-exclamation-triangle-fill"></i>
+
+                <span th:text="${error}">
+                    No se pudo registrar la venta.
+                </span>
+
+            </div>
+
+
+            <form
+                th:action="@{/ventas/guardar}"
+                method="post"
+                id="ventaForm">
+
+                <div class="row">
+
+                    <!-- =========================
+                         LEFT
+                    ========================= -->
+
+                    <div class="col-lg-8">
+
+                        <!-- PRODUCTO -->
+
+                        <div class="field">
+
+                            <label
+                                for="idProducto"
+                                class="form-label">
+
+                                Producto
+
+                            </label>
+
+                            <select
+                                id="idProducto"
+                                name="idProducto"
+                                class="form-select"
+                                required>
+
+                                <option value="">
+                                    Selecciona un producto
+                                </option>
+
+                                <option
+                                    th:each="producto : ${productos}"
+                                    th:value="${producto.idProducto}"
+                                    th:text="${producto.codigo + ' - ' + producto.nombre + ' | Stock: ' + producto.stockActual}"
+                                    th:data-precio="${producto.precioVenta}"
+                                    th:data-stock="${producto.stockActual}">
+
+                                    P001 - Producto | Stock: 10
+
+                                </option>
+
+                            </select>
+
+                            <div class="product-info">
+
+                                <i class="bi bi-box-seam"></i>
+
+                                <span>
+                                    El precio y el stock disponible se muestran automáticamente al seleccionar un producto.
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- CANTIDAD + PRECIO -->
+
+                        <div class="row">
+
+                            <div class="col-md-6">
+
+                                <div class="field">
+
+                                    <label
+                                        for="cantidad"
+                                        class="form-label">
+
+                                        Cantidad
+
+                                    </label>
+
+                                    <input
+                                        type="number"
+                                        id="cantidad"
+                                        name="cantidad"
+                                        class="form-control"
+                                        min="1"
+                                        value="1"
+                                        required>
+
+                                    <div class="form-text">
+
+                                        No puedes vender más unidades que el stock disponible.
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="field">
+
+                                    <label
+                                        for="precioUnitario"
+                                        class="form-label">
+
+                                        Precio unitario
+
+                                    </label>
+
+                                    <div class="input-group">
+
+                                        <span class="input-group-text">
+                                            S/
+                                        </span>
+
+                                        <input
+                                            type="number"
+                                            id="precioUnitario"
+                                            name="precioUnitario"
+                                            class="form-control"
+                                            step="0.01"
+                                            min="0"
+                                            readonly
+                                            required>
+
+                                    </div>
+
+                                    <div class="form-text">
+
+                                        Se obtiene automáticamente del producto.
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- CLIENTE -->
+
+                        <div class="field">
+
+                            <label
+                                for="idCliente"
+                                class="form-label">
+
+                                Cliente
+
+                                <span class="text-muted fw-normal">
+                                    (opcional)
+                                </span>
+
+                            </label>
+
+                            <input
+                                type="number"
+                                id="idCliente"
+                                name="idCliente"
+                                class="form-control"
+                                min="1"
+                                placeholder="Dejar vacío para público general">
+
+                            <div class="form-text">
+
+                                Si no seleccionas un cliente, la venta se registrará como público general.
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- MOTIVO -->
+
+                        <div class="field">
+
+                            <label
+                                for="motivo"
+                                class="form-label">
+
+                                Motivo
+
+                            </label>
+
+                            <input
+                                type="text"
+                                id="motivo"
+                                name="motivo"
+                                class="form-control"
+                                value="Venta de producto"
+                                maxlength="100">
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =========================
+                         RIGHT - SUMMARY
+                    ========================= -->
+
+                    <div class="col-lg-4">
+
+                        <div class="summary-card">
+
+                            <div class="summary-title">
+
+                                <i class="bi bi-receipt"></i>
+
+                                Resumen de venta
+
+                            </div>
+
+
+                            <div class="summary-row">
+
+                                <span>
+                                    Producto
+                                </span>
+
+                                <strong id="resumenProducto">
+                                    —
+                                </strong>
+
+                            </div>
+
+
+                            <div class="summary-row">
+
+                                <span>
+                                    Cantidad
+                                </span>
+
+                                <strong id="resumenCantidad">
+                                    0
+                                </strong>
+
+                            </div>
+
+
+                            <div class="summary-row">
+
+                                <span>
+                                    Precio unitario
+                                </span>
+
+                                <strong id="resumenPrecio">
+                                    S/ 0.00
+                                </strong>
+
+                            </div>
+
+
+                            <div class="summary-total">
+
+                                <span>
+                                    Total
+                                </span>
+
+                                <strong id="resumenTotal">
+                                    S/ 0.00
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =========================
+                     BUTTONS
+                ========================= -->
+
+                <div class="actions">
+
+                    <a
+                        href="/ventas"
+                        class="btn-cancel">
+
+                        <i class="bi bi-arrow-left"></i>
+
+                        Cancelar
+
+                    </a>
+
+
+                    <button
+                        type="submit"
+                        class="btn-save">
+
+                        <i class="bi bi-check-lg"></i>
+
+                        Registrar venta
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- =========================
+     JAVASCRIPT
+========================= -->
+
+<script>
+
+    const productoSelect =
+        document.getElementById("idProducto");
+
+    const precioInput =
+        document.getElementById("precioUnitario");
+
+    const cantidadInput =
+        document.getElementById("cantidad");
+
+    const resumenProducto =
+        document.getElementById("resumenProducto");
+
+    const resumenCantidad =
+        document.getElementById("resumenCantidad");
+
+    const resumenPrecio =
+        document.getElementById("resumenPrecio");
+
+    const resumenTotal =
+        document.getElementById("resumenTotal");
+
+
+    function actualizarResumen() {
+
+        const opcionSeleccionada =
+            productoSelect.options[
+                productoSelect.selectedIndex
+            ];
+
+        if (!opcionSeleccionada ||
+            !opcionSeleccionada.value) {
+
+            precioInput.value = "";
+
+            resumenProducto.textContent = "—";
+            resumenCantidad.textContent = "0";
+            resumenPrecio.textContent = "S/ 0.00";
+            resumenTotal.textContent = "S/ 0.00";
+
+            return;
+        }
+
+
+        const precio =
+            parseFloat(
+                opcionSeleccionada.dataset.precio || "0"
+            );
+
+        const stock =
+            parseInt(
+                opcionSeleccionada.dataset.stock || "0"
+            );
+
+
+        precioInput.value =
+            precio.toFixed(2);
+
+
+        cantidadInput.max =
+            stock;
+
+
+        let cantidad =
+            parseInt(
+                cantidadInput.value || "0"
+            );
+
+
+        if (cantidad < 1) {
+            cantidad = 1;
+            cantidadInput.value = 1;
+        }
+
+
+        if (cantidad > stock) {
+
+            cantidad = stock;
+
+            cantidadInput.value =
+                stock;
+        }
+
+
+        const total =
+            precio * cantidad;
+
+
+        resumenProducto.textContent =
+            opcionSeleccionada.textContent
+                .split(" | ")[0];
+
+
+        resumenCantidad.textContent =
+            cantidad;
+
+
+        resumenPrecio.textContent =
+            "S/ " + precio.toFixed(2);
+
+
+        resumenTotal.textContent =
+            "S/ " + total.toFixed(2);
+    }
+
+
+    productoSelect.addEventListener(
+        "change",
+        actualizarResumen
+    );
+
+
+    cantidadInput.addEventListener(
+        "input",
+        function () {
+
+            const opcionSeleccionada =
+                productoSelect.options[
+                    productoSelect.selectedIndex
+                ];
+
+            if (!opcionSeleccionada ||
+                !opcionSeleccionada.value) {
+
+                return;
+            }
+
+
+            const stock =
+                parseInt(
+                    opcionSeleccionada.dataset.stock || "0"
+                );
+
+
+            let cantidad =
+                parseInt(
+                    cantidadInput.value || "0"
+                );
+
+
+            if (cantidad > stock) {
+
+                cantidad =
+                    stock;
+
+                cantidadInput.value =
+                    stock;
+            }
+
+
+            if (cantidad < 1) {
+
+                cantidad = 1;
+
+                cantidadInput.value = 1;
+            }
+
+
+            actualizarResumen();
+        }
+    );
+
+
+    document
+        .getElementById("ventaForm")
+        .addEventListener(
+            "submit",
+            function (event) {
+
+                const opcionSeleccionada =
+                    productoSelect.options[
+                        productoSelect.selectedIndex
+                    ];
+
+                if (!opcionSeleccionada ||
+                    !opcionSeleccionada.value) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Selecciona un producto."
+                    );
+
+                    return;
+                }
+
+
+                const stock =
+                    parseInt(
+                        opcionSeleccionada.dataset.stock || "0"
+                    );
+
+
+                const cantidad =
+                    parseInt(
+                        cantidadInput.value || "0"
+                    );
+
+
+                if (cantidad <= 0) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "La cantidad debe ser mayor que 0."
+                    );
+
+                    return;
+                }
+
+
+                if (cantidad > stock) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "No puedes vender más unidades que el stock disponible."
+                    );
+
+                    return;
+                }
+
+            }
+        );
+
+</script>
+
+</body>
+
+</html>

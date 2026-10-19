@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+        rel="stylesheet">
+
+</head>
+
+<body>
+
+<aside class="sidebar"
+       th:fragment="sidebar">
+
+    <style>
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 305px;
+            height: 100vh;
+            background: #07385f;
+            color: white;
+            padding: 20px 14px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .sidebar * {
+            box-sizing: border-box;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 4px 14px 22px;
+        }
+
+        .sidebar-logo i {
+            font-size: 34px;
+            color: #ff7a00;
+        }
+
+        .sidebar-logo h2 {
+            margin: 0;
+            font-size: 25px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .sidebar-logo span {
+            display: block;
+            font-size: 11px;
+            color: #c8d9e7;
+            margin-top: 2px;
+        }
+
+        .sidebar-section {
+            color: #b8ccdc;
+            font-size: 12px;
+            letter-spacing: 1px;
+            margin: 22px 16px 9px;
+        }
+
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            width: 100%;
+            min-height: 58px;
+            padding: 12px 17px;
+            border-radius: 11px;
+            color: #eef6fb;
+            text-decoration: none;
+            font-size: 16px;
+            transition: 0.2s;
+        }
+
+        .sidebar-menu a:hover {
+            background: rgba(255,255,255,0.08);
+            color: white;
+        }
+
+        .sidebar-menu a.active {
+            background: #12a3c4;
+            color: white;
+        }
+
+        .sidebar-menu a i {
+            width: 27px;
+            text-align: center;
+            font-size: 23px;
+        }
+
+        .sidebar-divider {
+            height: 1px;
+            background: rgba(255,255,255,0.15);
+            margin: 20px 12px;
+        }
+
+        .sidebar-footer {
+            margin: 20px 14px;
+            padding-top: 18px;
+            border-top: 1px solid rgba(255,255,255,0.15);
+            color: #b8ccdc;
+            font-size: 12px;
+            text-align: center;
+        }
+
+    </style>
+
+
+    <!-- ================================
+         LOGO
+    ================================= -->
+
+    <div class="sidebar-logo">
+
+        <i class="bi bi-shop"></i>
+
+        <div>
+
+            <h2>SIVET</h2>
+
+            <span>
+                Sistema de Inventario y Ventas
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================
+         PRINCIPAL
+    ================================= -->
+
+    <div class="sidebar-section">
+        PRINCIPAL
+    </div>
+
+    <nav class="sidebar-menu">
+
+        <a href="/"
+           data-route="/">
+
+            <i class="bi bi-grid-fill"></i>
+
+            <span>
+                Dashboard
+            </span>
+
+        </a>
+
+    </nav>
+
+
+    <!-- ================================
+         GESTIÓN - ADMINISTRADOR
+    ================================= -->
+
+    <div
+        th:if="${session.usuario != null and session.usuario.idRol == 1}">
+
+        <div class="sidebar-section">
+            GESTIÓN
+        </div>
+
+        <nav class="sidebar-menu">
+
+            <a href="/productos"
+               data-route="/productos">
+
+                <i class="bi bi-box-seam"></i>
+
+                <span>
+                    Productos
+                </span>
+
+            </a>
+
+
+            <a href="/categorias"
+               data-route="/categorias">
+
+                <i class="bi bi-tags"></i>
+
+                <span>
+                    Categorías
+                </span>
+
+            </a>
+
+
+            <a href="/ventas"
+               data-route="/ventas">
+
+                <i class="bi bi-cart3"></i>
+
+                <span>
+                    Ventas
+                </span>
+
+            </a>
+
+
+            <a href="/compras"
+               data-route="/compras">
+
+                <i class="bi bi-bag"></i>
+
+                <span>
+                    Compras
+                </span>
+
+            </a>
+
+
+            <a href="/clientes"
+               data-route="/clientes">
+
+                <i class="bi bi-people"></i>
+
+                <span>
+                    Clientes
+                </span>
+
+            </a>
+
+
+            <a href="/proveedores"
+               data-route="/proveedores">
+
+                <i class="bi bi-truck"></i>
+
+                <span>
+                    Proveedores
+                </span>
+
+            </a>
+
+
+            <a href="/inventario"
+               data-route="/inventario">
+
+                <i class="bi bi-boxes"></i>
+
+                <span>
+                    Inventario
+                </span>
+
+            </a>
+
+        </nav>
+
+
+        <!-- ================================
+             SISTEMA
+        ================================= -->
+
+        <div class="sidebar-section">
+            SISTEMA
+        </div>
+
+        <nav class="sidebar-menu">
+
+            <a href="/reportes"
+               data-route="/reportes">
+
+                <i class="bi bi-bar-chart-fill"></i>
+
+                <span>
+                    Reportes
+                </span>
+
+            </a>
+
+
+            <a href="/usuarios"
+               data-route="/usuarios">
+
+                <i class="bi bi-person"></i>
+
+                <span>
+                    Usuarios
+                </span>
+
+            </a>
+
+
+            <a href="/configuracion"
+               data-route="/configuracion">
+
+                <i class="bi bi-gear-fill"></i>
+
+                <span>
+                    Configuración
+                </span>
+
+            </a>
+
+        </nav>
+
+    </div>
+
+
+    <!-- ================================
+         GESTIÓN - VENDEDOR
+    ================================= -->
+
+    <div
+        th:if="${session.usuario != null and session.usuario.idRol == 2}">
+
+        <div class="sidebar-section">
+            GESTIÓN
+        </div>
+
+        <nav class="sidebar-menu">
+
+            <a href="/clientes"
+               data-route="/clientes">
+
+                <i class="bi bi-people"></i>
+
+                <span>
+                    Clientes
+                </span>
+
+            </a>
+
+
+            <a href="/ventas"
+               data-route="/ventas">
+
+                <i class="bi bi-cart3"></i>
+
+                <span>
+                    Ventas
+                </span>
+
+            </a>
+
+        </nav>
+
+    </div>
+
+
+    <!-- ================================
+         GESTIÓN - ALMACENERO
+    ================================= -->
+
+    <div
+        th:if="${session.usuario != null and session.usuario.idRol == 3}">
+
+        <div class="sidebar-section">
+            GESTIÓN
+        </div>
+
+        <nav class="sidebar-menu">
+
+            <a href="/productos"
+               data-route="/productos">
+
+                <i class="bi bi-box-seam"></i>
+
+                <span>
+                    Productos
+                </span>
+
+            </a>
+
+
+            <a href="/categorias"
+               data-route="/categorias">
+
+                <i class="bi bi-tags"></i>
+
+                <span>
+                    Categorías
+                </span>
+
+            </a>
+
+
+            <a href="/compras"
+               data-route="/compras">
+
+                <i class="bi bi-bag"></i>
+
+                <span>
+                    Compras
+                </span>
+
+            </a>
+
+
+            <a href="/proveedores"
+               data-route="/proveedores">
+
+                <i class="bi bi-truck"></i>
+
+                <span>
+                    Proveedores
+                </span>
+
+            </a>
+
+
+            <a href="/inventario"
+               data-route="/inventario">
+
+                <i class="bi bi-boxes"></i>
+
+                <span>
+                    Inventario
+                </span>
+
+            </a>
+
+        </nav>
+
+    </div>
+
+
+    <!-- ================================
+         FOOTER
+    ================================= -->
+
+    <div class="sidebar-footer">
+
+        <i class="bi bi-shop"></i>
+
+        <br>
+
+        Tu bodega, siempre organizada
+
+    </div>
+
+
+    <!-- ================================
+         JAVASCRIPT
+    ================================= -->
+
+    <script>
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                const rutaActual =
+                    window.location.pathname;
+
+                const enlaces =
+                    document.querySelectorAll(
+                        ".sidebar-menu a[data-route]"
+                    );
+
+
+                enlaces.forEach(function (enlace) {
+
+                    const ruta =
+                        enlace.getAttribute("data-route");
+
+
+                    if (ruta === "/") {
+
+                        if (rutaActual === "/") {
+
+                            enlace.classList.add("active");
+
+                        }
+
+                        return;
+
+                    }
+
+
+                    if (
+                        rutaActual === ruta ||
+                        rutaActual.startsWith(ruta + "/")
+                    ) {
+
+                        enlace.classList.add("active");
+
+                    }
+
+                });
+
+            }
+        );
+
+    </script>
+
+</aside>
+
+</body>
+
+</html>

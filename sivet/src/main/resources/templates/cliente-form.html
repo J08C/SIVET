@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>SIVET - Cliente</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <style>
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f4f8fb;
+            color: #17365d;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 265px;
+            height: 100vh;
+            background: linear-gradient(180deg, #07345b, #062d4e);
+            color: white;
+            padding: 22px 14px;
+            overflow-y: auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 12px 25px;
+        }
+
+        .logo-icon {
+            font-size: 38px;
+            color: #ff8c00;
+        }
+
+        .logo h2 {
+            margin: 0;
+            font-size: 27px;
+        }
+
+        .logo small {
+            color: #d8e7f3;
+            font-size: 11px;
+        }
+
+        .menu a {
+            display: flex;
+            align-items: center;
+            gap: 17px;
+            color: #dce9f3;
+            text-decoration: none;
+            padding: 13px 16px;
+            margin-bottom: 5px;
+            border-radius: 9px;
+            font-size: 15px;
+        }
+
+        .menu a:hover,
+        .menu a.active {
+            background: #0b9fc1;
+            color: white;
+        }
+
+        .menu i {
+            font-size: 21px;
+            width: 25px;
+        }
+
+        .sidebar-footer {
+            margin: 20px 10px 5px;
+            border-top: 1px solid rgba(255,255,255,0.15);
+            padding-top: 18px;
+            color: #b9ccda;
+            font-size: 12px;
+        }
+
+        .main {
+            margin-left: 265px;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            height: 75px;
+            background: white;
+            border-bottom: 1px solid #e1e9ef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+        }
+
+        .search {
+            width: 430px;
+            background: #f2f6f9;
+            border-radius: 8px;
+            padding: 11px 16px;
+            color: #8a9aaa;
+        }
+
+        .user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 43px;
+            height: 43px;
+            border-radius: 50%;
+            background: #07345b;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .page-header {
+            margin-bottom: 25px;
+        }
+
+        .page-header h1 {
+            margin: 0;
+            font-size: 31px;
+            font-weight: 700;
+        }
+
+        .page-header p {
+            margin: 5px 0 0;
+            color: #687b8d;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(30,60,90,0.06);
+            max-width: 900px;
+        }
+
+        .info-box {
+            background: #eaf7fc;
+            border-left: 4px solid #0b9fc1;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+            color: #456579;
+        }
+
+        .form-label {
+            font-weight: 600;
+        }
+
+        .btn-sivet {
+            background: #f47721;
+            color: white;
+            border: none;
+            padding: 11px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .btn-sivet:hover {
+            background: #df681b;
+            color: white;
+        }
+
+        .btn-cancelar {
+            background: #e9eef2;
+            color: #526b80;
+            border: none;
+            padding: 11px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+        }
+
+        .btn-cancelar:hover {
+            background: #dce4e9;
+            color: #17365d;
+        }
+
+        @media (max-width: 768px) {
+
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .topbar {
+                flex-wrap: wrap;
+                height: auto;
+                gap: 15px;
+                padding: 15px;
+            }
+
+            .search {
+                width: 100%;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<aside class="sidebar">
+
+    <div class="logo">
+
+        <div class="logo-icon">
+            <i class="bi bi-cart3"></i>
+        </div>
+
+        <div>
+
+            <h2>SIVET</h2>
+
+            <small>
+                Sistema de Inventario y Ventas
+            </small>
+
+        </div>
+
+    </div>
+
+    <nav class="menu">
+
+        <a href="/">
+            <i class="bi bi-house-fill"></i>
+            Dashboard
+        </a>
+
+        <a href="/productos">
+            <i class="bi bi-box"></i>
+            Productos
+        </a>
+
+        <a href="/categorias">
+            <i class="bi bi-tag"></i>
+            Categorías
+        </a>
+
+        <a href="#">
+            <i class="bi bi-cart3"></i>
+            Ventas
+        </a>
+
+        <a href="#">
+            <i class="bi bi-receipt"></i>
+            Compras
+        </a>
+
+        <a href="/clientes"
+           class="active">
+
+            <i class="bi bi-people"></i>
+
+            Clientes
+
+        </a>
+
+        <a href="/proveedores">
+
+            <i class="bi bi-truck"></i>
+
+            Proveedores
+
+        </a>
+
+        <a href="#">
+
+            <i class="bi bi-boxes"></i>
+
+            Inventario
+
+        </a>
+
+        <a href="#">
+
+            <i class="bi bi-bar-chart-fill"></i>
+
+            Reportes
+
+        </a>
+
+    </nav>
+
+    <div class="sidebar-footer">
+
+        <strong>SIVET v1.0.0</strong>
+
+        <br>
+
+        <i class="bi bi-shop"></i>
+
+        Tu bodega, siempre organizada
+
+    </div>
+
+</aside>
+
+<main class="main">
+
+    <header class="topbar">
+
+        <div class="search">
+
+            <i class="bi bi-search"></i>
+
+            Buscar productos, clientes, ventas...
+
+        </div>
+
+        <div class="user">
+
+            <i class="bi bi-bell fs-5"></i>
+
+            <div class="avatar">
+                JP
+            </div>
+
+            <div>
+
+                <strong>
+                    Administrador SIVET
+                </strong>
+
+                <br>
+
+                <small>
+                    Administrador
+                </small>
+
+            </div>
+
+            <i class="bi bi-chevron-down"></i>
+
+        </div>
+
+    </header>
+
+    <section class="content">
+
+        <div class="page-header">
+
+            <h1
+                th:text="${cliente.idCliente > 0}
+                    ? 'Editar cliente'
+                    : 'Nuevo cliente'">
+
+                Nuevo cliente
+
+            </h1>
+
+            <p>
+                Registra y administra los clientes de SIVET.
+            </p>
+
+        </div>
+
+        <div class="panel">
+
+            <div class="info-box">
+
+                <i class="bi bi-info-circle"></i>
+
+                El DNI/RUC debe ser único.
+
+            </div>
+
+            <div
+                th:if="${error}"
+                class="alert alert-danger">
+
+                <i class="bi bi-exclamation-triangle"></i>
+
+                <span th:text="${error}">
+                    Error al guardar el cliente.
+                </span>
+
+            </div>
+
+            <form
+                th:action="@{/clientes/guardar}"
+                th:object="${cliente}"
+                method="post">
+
+                <!-- IMPORTANTE PARA EDITAR -->
+
+                <input
+                    type="hidden"
+                    th:field="*{idCliente}">
+
+                <div class="row g-4">
+
+                    <div class="col-md-6">
+
+                        <label
+                            for="dniRuc"
+                            class="form-label">
+
+                            DNI / RUC
+
+                        </label>
+
+                        <input
+                            type="text"
+                            id="dniRuc"
+                            th:field="*{dniRuc}"
+                            class="form-control"
+                            maxlength="11"
+                            placeholder="Ej. 61086558"
+                            required>
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <label
+                            for="nombres"
+                            class="form-label">
+
+                            Nombres
+
+                        </label>
+
+                        <input
+                            type="text"
+                            id="nombres"
+                            th:field="*{nombres}"
+                            class="form-control"
+                            maxlength="120"
+                            placeholder="Nombre completo"
+                            required>
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <label
+                            for="telefono"
+                            class="form-label">
+
+                            Teléfono
+
+                        </label>
+
+                        <input
+                            type="text"
+                            id="telefono"
+                            th:field="*{telefono}"
+                            class="form-control"
+                            maxlength="15"
+                            placeholder="Ej. 987654321">
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <label
+                            for="direccion"
+                            class="form-label">
+
+                            Dirección
+
+                        </label>
+
+                        <input
+                            type="text"
+                            id="direccion"
+                            th:field="*{direccion}"
+                            class="form-control"
+                            maxlength="150"
+                            placeholder="Dirección del cliente">
+
+                    </div>
+
+                </div>
+
+                <hr class="mt-4">
+
+                <div class="d-flex justify-content-end gap-3 mt-4">
+
+                    <a
+                        href="/clientes"
+                        class="btn-cancelar">
+
+                        <i class="bi bi-x-lg"></i>
+
+                        Cancelar
+
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="btn-sivet">
+
+                        <i class="bi bi-save"></i>
+
+                        Guardar cliente
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </section>
+
+</main>
+
+</body>
+
+</html>

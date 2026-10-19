@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIVET - Compra</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f4f8fb;
+            color: #17365d;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 265px;
+            height: 100vh;
+            background: linear-gradient(180deg, #07345b, #062d4e);
+            color: white;
+            padding: 22px 14px;
+            overflow-y: auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 12px 25px;
+        }
+
+        .logo-icon {
+            font-size: 38px;
+            color: #ff8c00;
+        }
+
+        .logo h2 {
+            margin: 0;
+            font-size: 27px;
+        }
+
+        .logo small {
+            color: #d8e7f3;
+            font-size: 11px;
+        }
+
+        .menu a {
+            display: flex;
+            align-items: center;
+            gap: 17px;
+            color: #dce9f3;
+            text-decoration: none;
+            padding: 13px 16px;
+            margin-bottom: 5px;
+            border-radius: 9px;
+            font-size: 15px;
+        }
+
+        .menu a:hover,
+        .menu a.active {
+            background: #0b9fc1;
+            color: white;
+        }
+
+        .menu i {
+            font-size: 21px;
+            width: 25px;
+        }
+
+        .sidebar-footer {
+            margin: 20px 10px 5px;
+            border-top: 1px solid rgba(255, 255, 255, .15);
+            padding-top: 18px;
+            color: #b9ccda;
+            font-size: 12px;
+        }
+
+        .main {
+            margin-left: 265px;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            min-height: 75px;
+            background: white;
+            border-bottom: 1px solid #e1e9ef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 30px;
+            gap: 20px;
+        }
+
+        .search {
+            width: 430px;
+            max-width: 100%;
+            background: #f2f6f9;
+            border-radius: 8px;
+            padding: 11px 16px;
+            color: #8a9aaa;
+        }
+
+        .user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 43px;
+            height: 43px;
+            border-radius: 50%;
+            background: #07345b;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .page-header {
+            margin-bottom: 25px;
+        }
+
+        .page-header h1 {
+            margin: 0;
+            font-size: 31px;
+            font-weight: 700;
+        }
+
+        .page-header p {
+            margin: 5px 0 0;
+            color: #687b8d;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(30, 60, 90, .06);
+            max-width: 1000px;
+        }
+
+        .info-box {
+            background: #eaf7fc;
+            border-left: 4px solid #0b9fc1;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+            color: #456579;
+        }
+
+        .form-label {
+            font-weight: 600;
+        }
+
+        .btn-sivet {
+            background: #f47721;
+            color: white;
+            border: none;
+            padding: 11px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .btn-sivet:hover {
+            background: #df681b;
+            color: white;
+        }
+
+        .btn-cancelar {
+            background: #e9eef2;
+            color: #526b80;
+            border: none;
+            padding: 11px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .topbar {
+                flex-wrap: wrap;
+            }
+
+            .content {
+                padding: 18px;
+            }
+
+            .panel {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<aside class="sidebar">
+    <div class="logo">
+        <div class="logo-icon">
+            <i class="bi bi-cart3"></i>
+        </div>
+
+        <div>
+            <h2>SIVET</h2>
+            <small>Sistema de Inventario y Ventas</small>
+        </div>
+    </div>
+
+    <nav class="menu">
+        <a href="/">
+            <i class="bi bi-house-fill"></i>Dashboard
+        </a>
+
+        <a href="/productos">
+            <i class="bi bi-box"></i>Productos
+        </a>
+
+        <a href="/categorias">
+            <i class="bi bi-tag"></i>Categorías
+        </a>
+
+        <a href="/ventas">
+            <i class="bi bi-cart3"></i>Ventas
+        </a>
+
+        <a href="/compras" class="active">
+            <i class="bi bi-receipt"></i>Compras
+        </a>
+
+        <a href="/clientes">
+            <i class="bi bi-people"></i>Clientes
+        </a>
+
+        <a href="/proveedores">
+            <i class="bi bi-truck"></i>Proveedores
+        </a>
+
+        <a href="/inventario">
+            <i class="bi bi-boxes"></i>Inventario
+        </a>
+
+        <a href="/reportes">
+            <i class="bi bi-bar-chart-fill"></i>Reportes
+        </a>
+    </nav>
+
+    <div class="sidebar-footer">
+        <strong>SIVET v1.0.0</strong><br>
+        <i class="bi bi-shop"></i>
+        Tu bodega, siempre organizada
+    </div>
+</aside>
+
+<main class="main">
+
+    <header class="topbar">
+        <div class="search">
+            <i class="bi bi-search"></i>
+            Buscar productos, clientes, ventas...
+        </div>
+
+        <div class="user">
+            <i class="bi bi-bell fs-5"></i>
+
+            <div class="avatar">JP</div>
+
+            <div>
+                <strong>Administrador SIVET</strong><br>
+                <small>Administrador</small>
+            </div>
+        </div>
+    </header>
+
+    <section class="content">
+
+        <div class="page-header">
+            <h1 th:text="${compra.idCompra > 0}
+                ? 'Editar compra' : 'Nueva compra'">
+                Nueva compra
+            </h1>
+
+            <p>Registra los productos que ingresan al inventario.</p>
+        </div>
+
+        <div class="panel">
+
+            <div class="info-box">
+                <i class="bi bi-info-circle"></i>
+                Selecciona el proveedor, el producto y la cantidad.
+                El total se calculará automáticamente.
+            </div>
+
+            <div th:if="${error}" class="alert alert-danger">
+                <i class="bi bi-exclamation-triangle"></i>
+                <span th:text="${error}">
+                    Error al guardar la compra.
+                </span>
+            </div>
+
+            <form th:action="@{/compras/guardar}"
+                  th:object="${compra}"
+                  method="post"
+                  id="formCompra">
+
+                <input type="hidden" th:field="*{idCompra}">
+
+                <div class="row g-4">
+
+                    <!-- PROVEEDOR -->
+                    <div class="col-md-6">
+
+                        <label for="idProveedor" class="form-label">
+                            Proveedor
+                        </label>
+
+                        <select id="idProveedor"
+                                name="idProveedor"
+                                class="form-select"
+                                required>
+
+                            <option value="" disabled selected>
+                                Selecciona un proveedor
+                            </option>
+
+                            <option th:each="proveedor : ${proveedores}"
+                                    th:value="${proveedor.idProveedor}"
+                                    th:text="${proveedor.razonSocial}"
+                                    th:selected="${compra.idProveedor == proveedor.idProveedor}">
+                                Proveedor
+                            </option>
+
+                        </select>
+                    </div>
+
+                    <!-- PRODUCTO -->
+                    <div class="col-md-6">
+
+                        <label for="idProducto" class="form-label">
+                            Producto
+                        </label>
+
+                        <select id="idProducto"
+                                name="idProducto"
+                                class="form-select"
+                                required>
+
+                            <option value="" disabled selected>
+                                Selecciona un producto
+                            </option>
+
+                            <option th:each="producto : ${productos}"
+                                    th:value="${producto.idProducto}"
+                                    th:text="${producto.nombre}"
+                                    th:attr="data-precio=${producto.precioCompra}">
+                                Producto
+                            </option>
+
+                        </select>
+                    </div>
+
+                    <!-- CANTIDAD -->
+                    <div class="col-md-6">
+
+                        <label for="cantidad" class="form-label">
+                            Cantidad
+                        </label>
+
+                        <input type="number"
+                               id="cantidad"
+                               name="cantidad"
+                               class="form-control"
+                               min="1"
+                               step="1"
+                               value="1"
+                               required>
+                    </div>
+
+                    <!-- COSTO UNITARIO -->
+                    <div class="col-md-6">
+
+                        <label for="costoUnitario" class="form-label">
+                            Costo unitario (S/)
+                        </label>
+
+                        <input type="number"
+                               id="costoUnitario"
+                               name="costoUnitario"
+                               class="form-control"
+                               min="0.01"
+                               step="0.01"
+                               placeholder="0.00"
+                               required>
+                    </div>
+
+                    <!-- TOTAL -->
+                    <div class="col-md-6">
+
+                        <label for="total" class="form-label">
+                            Total de la compra (S/)
+                        </label>
+
+                        <input type="number"
+                               id="total"
+                               th:field="*{total}"
+                               class="form-control"
+                               min="0.01"
+                               step="0.01"
+                               readonly
+                               required>
+                    </div>
+
+                    <!-- ID DE COMPRA, SOLO AL EDITAR -->
+                    <div class="col-md-6"
+                         th:if="${compra.idCompra > 0}">
+
+                        <label class="form-label">
+                            ID de compra
+                        </label>
+
+                        <input type="text"
+                               class="form-control"
+                               th:value="${compra.idCompra}"
+                               disabled>
+                    </div>
+
+                </div>
+
+                <hr class="mt-4">
+
+                <div class="d-flex justify-content-end gap-3 mt-4">
+
+                    <a href="/compras" class="btn-cancelar">
+                        <i class="bi bi-x-lg"></i>
+                        Cancelar
+                    </a>
+
+                    <button type="submit" class="btn-sivet">
+                        <i class="bi bi-save"></i>
+                        Guardar compra
+                    </button>
+
+                </div>
+
+            </form>
+        </div>
+    </section>
+</main>
+
+<script>
+    const selectorProducto =
+        document.getElementById("idProducto");
+
+    const cantidadInput =
+        document.getElementById("cantidad");
+
+    const costoInput =
+        document.getElementById("costoUnitario");
+
+    const totalInput =
+        document.getElementById("total");
+
+    function calcularTotal() {
+        const cantidad = Number(cantidadInput.value);
+        const costo = Number(costoInput.value);
+
+        const total =
+            cantidad > 0 && costo >= 0
+                ? cantidad * costo
+                : 0;
+
+        totalInput.value = total.toFixed(2);
+    }
+
+    // Autocompletar el costo al seleccionar un producto.
+    selectorProducto.addEventListener("change", function () {
+        const opcion = this.options[this.selectedIndex];
+        const precio = opcion.getAttribute("data-precio");
+
+        if (precio !== null && precio !== "") {
+            costoInput.value = Number(precio).toFixed(2);
+        } else {
+            costoInput.value = "";
+        }
+
+        calcularTotal();
+    });
+
+    // Actualizar total cuando cambia la cantidad o el costo.
+    cantidadInput.addEventListener("input", calcularTotal);
+    costoInput.addEventListener("input", calcularTotal);
+
+    // Validar antes de enviar.
+    document.getElementById("formCompra")
+        .addEventListener("submit", function (event) {
+
+            const proveedor =
+                document.getElementById("idProveedor").value;
+
+            const producto = selectorProducto.value;
+            const cantidad = Number(cantidadInput.value);
+            const costo = Number(costoInput.value);
+
+            if (
+                !proveedor ||
+                !producto ||
+                !Number.isInteger(cantidad) ||
+                cantidad <= 0 ||
+                !Number.isFinite(costo) ||
+                costo <= 0
+            ) {
+                event.preventDefault();
+
+                alert(
+                    "Selecciona un proveedor y un producto. " +
+                    "Ingresa una cantidad entera y un costo válido."
+                );
+            }
+        });
+</script>
+
+</body>
+</html>

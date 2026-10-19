@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Configuración | SIVET</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f4f8fb;
+            color: #17365d;
+        }
+
+        /* =========================
+           CONTENIDO PRINCIPAL
+        ========================= */
+
+        .main {
+            margin-left: 305px;
+            min-height: 100vh;
+        }
+
+        /* =========================
+           TOPBAR
+        ========================= */
+
+        .topbar {
+            height: 75px;
+            background: white;
+            border-bottom: 1px solid #e1e9ef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+        }
+
+        .page-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .user-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+        }
+
+        .avatar {
+            width: 43px;
+            height: 43px;
+            border-radius: 50%;
+            background: #07345b;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .user-info {
+            line-height: 1.2;
+        }
+
+        .user-info strong {
+            display: block;
+            font-size: 14px;
+        }
+
+        .user-info small {
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+        .user-button {
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            color: #6b7280;
+            font-size: 18px;
+        }
+
+        .dropdown-menu-custom {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 55px;
+            background: white;
+            min-width: 200px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+            padding: 8px;
+            z-index: 2000;
+        }
+
+        .dropdown-menu-custom.show {
+            display: block;
+        }
+
+        .dropdown-menu-custom a,
+        .dropdown-menu-custom button {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border: none;
+            background: transparent;
+            text-decoration: none;
+            color: #374151;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 14px;
+            text-align: left;
+        }
+
+        .dropdown-menu-custom a:hover,
+        .dropdown-menu-custom button:hover {
+            background: #f3f4f6;
+        }
+
+        .logout-button {
+            color: #dc2626 !important;
+        }
+
+        /* =========================
+           CONTENIDO
+        ========================= */
+
+        .content {
+            padding: 30px;
+        }
+
+        .welcome {
+            margin-bottom: 25px;
+        }
+
+        .welcome h1 {
+            font-size: 31px;
+            margin: 0 0 5px;
+            font-weight: 700;
+        }
+
+        .welcome p {
+            color: #687b8d;
+            margin: 0;
+        }
+
+        /* =========================
+           TARJETAS
+        ========================= */
+
+        .config-card {
+            background: white;
+            border-radius: 14px;
+            border: none;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 12px rgba(30,60,90,0.05);
+        }
+
+        .config-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 22px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .config-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: #e7f7fb;
+            color: #0d8eae;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 23px;
+        }
+
+        .config-header h3 {
+            margin: 0;
+            font-size: 19px;
+        }
+
+        .config-header p {
+            margin: 3px 0 0;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: #1f2937;
+            text-align: right;
+        }
+
+        .badge-sivet {
+            background: #e7f7fb;
+            color: #0d8eae;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* =========================
+           ALERTA
+        ========================= */
+
+        .info-alert {
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            color: #075985;
+            border-radius: 12px;
+            padding: 18px;
+        }
+
+        .info-alert i {
+            font-size: 22px;
+        }
+
+        .info-alert strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .info-alert p {
+            margin: 0;
+            font-size: 14px;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 900px) {
+
+            .main {
+                margin-left: 0;
+            }
+
+            .topbar {
+                padding: 0 20px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+        }
+
+        @media (max-width: 700px) {
+
+            .topbar {
+                padding: 0 15px;
+            }
+
+            .page-title {
+                font-size: 18px;
+            }
+
+            .user-info {
+                display: none;
+            }
+
+            .info-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .info-value {
+                text-align: left;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- ==================================================
+     SIDEBAR UNIFICADO
+================================================== -->
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+
+<!-- ==================================================
+     CONTENIDO PRINCIPAL
+================================================== -->
+
+<main class="main">
+
+
+    <!-- TOPBAR -->
+
+    <header class="topbar">
+
+
+        <h2 class="page-title">
+            Configuración
+        </h2>
+
+
+        <div class="user-area">
+
+
+            <!-- AVATAR -->
+
+            <div
+                class="avatar"
+                th:text="${session.usuario != null
+                    ? session.usuario.nombreCompleto.substring(0,1).toUpperCase()
+                    : 'U'}">
+
+                U
+
+            </div>
+
+
+            <!-- INFORMACIÓN DEL USUARIO -->
+
+            <div class="user-info">
+
+                <strong
+                    th:text="${session.usuario != null
+                        ? session.usuario.nombreCompleto
+                        : 'Usuario'}">
+
+                    Administrador SIVET
+
+                </strong>
+
+
+                <small
+                    th:text="${session.usuario != null
+                        ? (session.usuario.idRol == 1
+                            ? 'Administrador'
+                            : session.usuario.idRol == 2
+                                ? 'Vendedor'
+                                : 'Almacenero')
+                        : 'Usuario'}">
+
+                    Administrador
+
+                </small>
+
+            </div>
+
+
+            <!-- BOTÓN -->
+
+            <button
+                type="button"
+                class="user-button"
+                onclick="toggleMenu()">
+
+                <i class="bi bi-chevron-down"></i>
+
+            </button>
+
+
+            <!-- DROPDOWN -->
+
+            <div
+                id="userDropdown"
+                class="dropdown-menu-custom">
+
+
+                <a href="/">
+
+                    <i class="bi bi-speedometer2"></i>
+
+                    Dashboard
+
+                </a>
+
+
+                <form
+                    th:action="@{/logout}"
+                    method="post">
+
+                    <button
+                        type="submit"
+                        class="logout-button">
+
+                        <i class="bi bi-box-arrow-right"></i>
+
+                        Cerrar sesión
+
+                    </button>
+
+                </form>
+
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- ==================================================
+         CONTENIDO
+    ================================================== -->
+
+    <section class="content">
+
+
+        <!-- ENCABEZADO -->
+
+        <div class="welcome">
+
+            <h1>
+                Configuración del sistema
+            </h1>
+
+            <p>
+                Información general y configuración actual de SIVET.
+            </p>
+
+        </div>
+
+
+        <!-- ==================================================
+             INFORMACIÓN DEL SISTEMA
+        ================================================== -->
+
+        <div class="config-card">
+
+
+            <div class="config-header">
+
+
+                <div class="config-icon">
+
+                    <i class="bi bi-gear-fill"></i>
+
+                </div>
+
+
+                <div>
+
+                    <h3>
+                        Información del sistema
+                    </h3>
+
+                    <p>
+                        Datos generales de la aplicación.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- NOMBRE -->
+
+            <div class="info-row">
+
+                <span class="info-label">
+                    Nombre del sistema
+                </span>
+
+                <span
+                    class="info-value"
+                    th:text="${nombreSistema}">
+
+                    SIVET
+
+                </span>
+
+            </div>
+
+
+            <!-- DESCRIPCIÓN -->
+
+            <div class="info-row">
+
+                <span class="info-label">
+                    Descripción
+                </span>
+
+                <span
+                    class="info-value"
+                    th:text="${descripcion}">
+
+                    Sistema de Inventario y Ventas para una Bodega
+
+                </span>
+
+            </div>
+
+
+            <!-- TECNOLOGÍA -->
+
+            <div class="info-row">
+
+                <span class="info-label">
+                    Tecnología
+                </span>
+
+                <span
+                    class="info-value"
+                    th:text="${tecnologia}">
+
+                    Java + Spring MVC + Thymeleaf
+
+                </span>
+
+            </div>
+
+
+            <!-- BASE DE DATOS -->
+
+            <div class="info-row">
+
+                <span class="info-label">
+                    Base de datos
+                </span>
+
+                <span
+                    class="info-value"
+                    th:text="${baseDatos}">
+
+                    PostgreSQL
+
+                </span>
+
+            </div>
+
+
+            <!-- PUERTO -->
+
+            <div class="info-row">
+
+                <span class="info-label">
+                    Puerto de aplicación
+                </span>
+
+                <span class="info-value">
+
+                    <span class="badge-sivet">
+
+                        <i class="bi bi-plug me-1"></i>
+
+                        <span th:text="${puerto}">
+                            8080
+                        </span>
+
+                    </span>
+
+                </span>
+
+            </div>
+
+
+            <!-- VERSIÓN -->
+
+            <div class="info-row">
+
+                <span class="info-label">
+                    Versión
+                </span>
+
+                <span
+                    class="info-value"
+                    th:text="${version}">
+
+                    1.0
+
+                </span>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- ==================================================
+             SESIÓN ACTUAL
+        ================================================== -->
+
+        <div class="config-card">
+
+
+            <div class="config-header">
+
+
+                <div class="config-icon">
+
+                    <i class="bi bi-person-check"></i>
+
+                </div>
+
+
+                <div>
+
+                    <h3>
+                        Sesión actual
+                    </h3>
+
+                    <p>
+                        Usuario que actualmente utiliza el sistema.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- USUARIO -->
+
+            <div class="info-row">
+
+                <span class="info-label">
+                    Usuario
+                </span>
+
+                <span
+                    class="info-value"
+                    th:text="${session.usuario != null
+                        ? session.usuario.usuario
+                        : 'No disponible'}">
+
+                    admin
+
+                </span>
+
+            </div>
+
+
+            <!-- NOMBRE -->
+
+            <div class="info-row">
+
+                <span class="info-label">
+                    Nombre completo
+                </span>
+
+                <span
+                    class="info-value"
+                    th:text="${session.usuario != null
+                        ? session.usuario.nombreCompleto
+                        : 'No disponible'}">
+
+                    Administrador SIVET
+
+                </span>
+
+            </div>
+
+
+            <!-- ROL -->
+
+            <div class="info-row">
+
+                <span class="info-label">
+                    Rol
+                </span>
+
+                <span class="info-value">
+
+                    <span
+                        class="badge-sivet"
+                        th:text="${session.usuario != null
+                            ? (session.usuario.idRol == 1
+                                ? 'Administrador'
+                                : session.usuario.idRol == 2
+                                    ? 'Vendedor'
+                                    : 'Almacenero')
+                            : 'No disponible'}">
+
+                        Administrador
+
+                    </span>
+
+                </span>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- ==================================================
+             AVISO
+        ================================================== -->
+
+        <div class="info-alert">
+
+
+            <i class="bi bi-info-circle-fill"></i>
+
+
+            <div>
+
+                <strong>
+                    Configuración del sistema
+                </strong>
+
+                <p>
+                    Esta sección muestra la configuración general
+                    de SIVET. Las operaciones de inventario, ventas,
+                    compras, usuarios y demás módulos se administran
+                    desde sus respectivas secciones.
+                </p>
+
+            </div>
+
+
+        </div>
+
+
+    </section>
+
+
+</main>
+
+
+<!-- ==================================================
+     JAVASCRIPT
+================================================== -->
+
+<script>
+
+    function toggleMenu() {
+
+        const menu =
+            document.getElementById("userDropdown");
+
+        menu.classList.toggle("show");
+
+    }
+
+
+    document.addEventListener(
+        "click",
+        function(event) {
+
+            const userArea =
+                document.querySelector(".user-area");
+
+            const menu =
+                document.getElementById("userDropdown");
+
+
+            if (
+                userArea &&
+                !userArea.contains(event.target)
+            ) {
+
+                menu.classList.remove("show");
+
+            }
+
+        }
+    );
+
+</script>
+
+
+</body>
+
+</html>
