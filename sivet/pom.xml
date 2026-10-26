@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
@@ -30,51 +29,39 @@
 
     <dependencies>
 
-        <!-- ========================================= -->
-        <!-- SPRING WEB MVC                            -->
-        <!-- ========================================= -->
+        <!-- SPRING WEB MVC -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webmvc</artifactId>
         </dependency>
 
-        <!-- ========================================= -->
-        <!-- THYMELEAF - INTERFAZ WEB                  -->
-        <!-- ========================================= -->
+        <!-- THYMELEAF - INTERFAZ WEB -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
 
-        <!-- ========================================= -->
-        <!-- VALIDACIÓN DE FORMULARIOS                 -->
-        <!-- ========================================= -->
+        <!-- VALIDACIÓN DE FORMULARIOS -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
-        <!-- ========================================= -->
-        <!-- POSTGRESQL - CONEXIÓN JDBC                -->
-        <!-- ========================================= -->
+        <!-- POSTGRESQL - CONEXIÓN JDBC -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.7.8</version>
         </dependency>
 
-        <!-- ========================================= -->
-        <!-- BCRYPT - CONTRASEÑAS                      -->
-        <!-- ========================================= -->
+        <!-- BCRYPT - CONTRASEÑAS -->
         <dependency>
             <groupId>org.mindrot</groupId>
             <artifactId>jbcrypt</artifactId>
             <version>0.4</version>
         </dependency>
 
-        <!-- ========================================= -->
-        <!-- JUNIT 5 - PRUEBAS TDD                     -->
-        <!-- ========================================= -->
+        <!-- JUNIT 5 - PRUEBAS TDD -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -82,11 +69,16 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- APACHE POI - GENERACIÓN DE ARCHIVOS EXCEL -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>5.2.5</version>
+        </dependency>
+
     </dependencies>
 
-    <!-- ============================================= -->
-    <!-- CONFIGURACIÓN MAVEN                           -->
-    <!-- ============================================= -->
+    <!-- CONFIGURACIÓN MAVEN -->
     <build>
         <plugins>
 
