@@ -1,9 +1,10 @@
+
 package com.sivet.controller;
 
 import com.sivet.dao.ProductoDAO;
-import com.sivet.dao.ProductoDAOImpl;
 import com.sivet.model.Producto;
 import com.sivet.service.ProductoService;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,39 +15,25 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class ProductoWebController {
 
     private final ProductoService productoService;
-    private final ProductoController productoController;
     private final ProductoDAO productoDAO;
 
-    public ProductoWebController() {
+    public ProductoWebController(
+            ProductoService productoService,
+            ProductoDAO productoDAO) {
 
-        this.productoDAO = new ProductoDAOImpl();
-
-        this.productoService =
-                new ProductoService(productoDAO);
-
-        this.productoController =
-                new ProductoController(productoService);
+        this.productoService = productoService;
+        this.productoDAO = productoDAO;
     }
 
     @GetMapping("/productos")
     public String listarProductos(Model model) {
-
-        model.addAttribute(
-                "productos",
-                productoService.listarProductos()
-        );
-
+        model.addAttribute("productos", productoService.listarProductos());
         return "productos";
     }
 
     @GetMapping("/productos/nuevo")
     public String mostrarFormularioNuevo(Model model) {
-
-        model.addAttribute(
-                "producto",
-                new Producto()
-        );
-
+        model.addAttribute("producto", new Producto());
         return "producto-form";
     }
 
@@ -55,18 +42,13 @@ public class ProductoWebController {
             @PathVariable("id") int id,
             Model model) {
 
-        Producto producto =
-                productoDAO.buscarPorId(id);
+        Producto producto = productoDAO.buscarPorId(id);
 
         if (producto == null) {
             return "redirect:/productos";
         }
 
-        model.addAttribute(
-                "producto",
-                producto
-        );
-
+        model.addAttribute("producto", producto);
         return "producto-form";
     }
 
@@ -78,18 +60,9 @@ public class ProductoWebController {
         boolean resultado;
 
         if (producto.getIdProducto() > 0) {
-
-            resultado =
-                    productoController.actualizarProducto(
-                            producto
-                    );
-
+            resultado = productoService.actualizarProducto(producto);
         } else {
-
-            resultado =
-                    productoController.registrarProducto(
-                            producto
-                    );
+            resultado = productoService.registrarProducto(producto);
         }
 
         if (resultado) {
@@ -98,24 +71,16 @@ public class ProductoWebController {
 
         model.addAttribute(
                 "error",
-                "No se pudo guardar el producto. "
-                + "Verifica los datos ingresados."
+                "No se pudo guardar el producto. Verifica los datos ingresados."
         );
-
-        model.addAttribute(
-                "producto",
-                producto
-        );
+        model.addAttribute("producto", producto);
 
         return "producto-form";
     }
 
     @PostMapping("/productos/eliminar/{id}")
-    public String eliminarProducto(
-            @PathVariable("id") int id) {
-
-        productoController.eliminarProducto(id);
-
+    public String eliminarProducto(@PathVariable("id") int id) {
+        productoService.eliminarProducto(id);
         return "redirect:/productos";
     }
 }

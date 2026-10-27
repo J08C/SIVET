@@ -1,6 +1,9 @@
+
 package com.sivet.dao;
 
 import com.sivet.model.MovimientoInventario;
+
+import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,12 +15,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class MovimientoInventarioDAOImpl
         implements MovimientoInventarioDAO {
 
     @Override
-    public void guardar(
-            MovimientoInventario movimiento) {
+    public void guardar(MovimientoInventario movimiento) {
 
         String sql = """
                 INSERT INTO MOVIMIENTO_INVENTARIO
@@ -26,20 +29,15 @@ public class MovimientoInventarioDAOImpl
                 VALUES (?, ?, ?, ?, ?, ?)
                 """;
 
-        try (Connection conexion =
-                     ConexionDB.obtenerConexion();
+        try (Connection conexion = ConexionDB.obtenerConexion();
              PreparedStatement statement =
                      conexion.prepareStatement(
                              sql,
                              Statement.RETURN_GENERATED_KEYS)) {
 
-            ejecutarGuardar(
-                    movimiento,
-                    statement
-            );
+            ejecutarGuardar(movimiento, statement);
 
         } catch (SQLException e) {
-
             throw new RuntimeException(
                     "Error al guardar el movimiento de inventario.",
                     e
@@ -47,6 +45,7 @@ public class MovimientoInventarioDAOImpl
         }
     }
 
+    // Guarda el movimiento utilizando la conexión de una transacción existente.
     public void guardar(
             MovimientoInventario movimiento,
             Connection conexion) {
@@ -63,16 +62,11 @@ public class MovimientoInventarioDAOImpl
                              sql,
                              Statement.RETURN_GENERATED_KEYS)) {
 
-            ejecutarGuardar(
-                    movimiento,
-                    statement
-            );
+            ejecutarGuardar(movimiento, statement);
 
         } catch (SQLException e) {
-
             throw new RuntimeException(
-                    "Error al guardar el movimiento "
-                    + "en la transacción.",
+                    "Error al guardar el movimiento en la transacción.",
                     e
             );
         }
@@ -83,53 +77,24 @@ public class MovimientoInventarioDAOImpl
             PreparedStatement statement)
             throws SQLException {
 
-        statement.setString(
-                1,
-                movimiento.getTipo()
-        );
-
-        statement.setInt(
-                2,
-                movimiento.getCantidad()
-        );
-
-        statement.setInt(
-                3,
-                movimiento.getSaldo()
-        );
-
-        statement.setString(
-                4,
-                movimiento.getMotivo()
-        );
-
-        statement.setInt(
-                5,
-                movimiento.getIdProducto()
-        );
-
-        statement.setInt(
-                6,
-                movimiento.getIdUsuario()
-        );
+        statement.setString(1, movimiento.getTipo());
+        statement.setInt(2, movimiento.getCantidad());
+        statement.setInt(3, movimiento.getSaldo());
+        statement.setString(4, movimiento.getMotivo());
+        statement.setInt(5, movimiento.getIdProducto());
+        statement.setInt(6, movimiento.getIdUsuario());
 
         statement.executeUpdate();
 
-        try (ResultSet claves =
-                     statement.getGeneratedKeys()) {
-
+        try (ResultSet claves = statement.getGeneratedKeys()) {
             if (claves.next()) {
-
-                movimiento.setIdMovimiento(
-                        claves.getInt(1)
-                );
+                movimiento.setIdMovimiento(claves.getInt(1));
             }
         }
     }
 
     @Override
-    public MovimientoInventario buscarPorId(
-            int idMovimiento) {
+    public MovimientoInventario buscarPorId(int idMovimiento) {
 
         String sql = """
                 SELECT id_movimiento,
@@ -144,29 +109,19 @@ public class MovimientoInventarioDAOImpl
                 WHERE id_movimiento = ?
                 """;
 
-        try (Connection conexion =
-                     ConexionDB.obtenerConexion();
+        try (Connection conexion = ConexionDB.obtenerConexion();
              PreparedStatement statement =
                      conexion.prepareStatement(sql)) {
 
-            statement.setInt(
-                    1,
-                    idMovimiento
-            );
+            statement.setInt(1, idMovimiento);
 
-            try (ResultSet resultado =
-                         statement.executeQuery()) {
-
+            try (ResultSet resultado = statement.executeQuery()) {
                 if (resultado.next()) {
-
-                    return convertirMovimiento(
-                            resultado
-                    );
+                    return convertirMovimiento(resultado);
                 }
             }
 
         } catch (SQLException e) {
-
             throw new RuntimeException(
                     "Error al buscar el movimiento de inventario.",
                     e
@@ -192,27 +147,18 @@ public class MovimientoInventarioDAOImpl
                 ORDER BY id_movimiento
                 """;
 
-        List<MovimientoInventario> movimientos =
-                new ArrayList<>();
+        List<MovimientoInventario> movimientos = new ArrayList<>();
 
-        try (Connection conexion =
-                     ConexionDB.obtenerConexion();
+        try (Connection conexion = ConexionDB.obtenerConexion();
              PreparedStatement statement =
                      conexion.prepareStatement(sql);
-             ResultSet resultado =
-                     statement.executeQuery()) {
+             ResultSet resultado = statement.executeQuery()) {
 
             while (resultado.next()) {
-
-                movimientos.add(
-                        convertirMovimiento(
-                                resultado
-                        )
-                );
+                movimientos.add(convertirMovimiento(resultado));
             }
 
         } catch (SQLException e) {
-
             throw new RuntimeException(
                     "Error al listar los movimientos de inventario.",
                     e
@@ -223,8 +169,7 @@ public class MovimientoInventarioDAOImpl
     }
 
     @Override
-    public List<MovimientoInventario> listarPorProducto(
-            int idProducto) {
+    public List<MovimientoInventario> listarPorProducto(int idProducto) {
 
         String sql = """
                 SELECT id_movimiento,
@@ -240,34 +185,21 @@ public class MovimientoInventarioDAOImpl
                 ORDER BY id_movimiento
                 """;
 
-        List<MovimientoInventario> movimientos =
-                new ArrayList<>();
+        List<MovimientoInventario> movimientos = new ArrayList<>();
 
-        try (Connection conexion =
-                     ConexionDB.obtenerConexion();
+        try (Connection conexion = ConexionDB.obtenerConexion();
              PreparedStatement statement =
                      conexion.prepareStatement(sql)) {
 
-            statement.setInt(
-                    1,
-                    idProducto
-            );
+            statement.setInt(1, idProducto);
 
-            try (ResultSet resultado =
-                         statement.executeQuery()) {
-
+            try (ResultSet resultado = statement.executeQuery()) {
                 while (resultado.next()) {
-
-                    movimientos.add(
-                            convertirMovimiento(
-                                    resultado
-                            )
-                    );
+                    movimientos.add(convertirMovimiento(resultado));
                 }
             }
 
         } catch (SQLException e) {
-
             throw new RuntimeException(
                     "Error al listar movimientos por producto.",
                     e
@@ -278,8 +210,7 @@ public class MovimientoInventarioDAOImpl
     }
 
     @Override
-    public void actualizar(
-            MovimientoInventario movimiento) {
+    public void actualizar(MovimientoInventario movimiento) {
 
         String sql = """
                 UPDATE MOVIMIENTO_INVENTARIO
@@ -293,63 +224,29 @@ public class MovimientoInventarioDAOImpl
                 WHERE id_movimiento = ?
                 """;
 
-        try (Connection conexion =
-                     ConexionDB.obtenerConexion();
+        try (Connection conexion = ConexionDB.obtenerConexion();
              PreparedStatement statement =
                      conexion.prepareStatement(sql)) {
 
-            LocalDateTime fecha =
-                    movimiento.getFecha();
+            LocalDateTime fecha = movimiento.getFecha();
 
             if (fecha == null) {
                 fecha = LocalDateTime.now();
                 movimiento.setFecha(fecha);
             }
 
-            statement.setTimestamp(
-                    1,
-                    Timestamp.valueOf(fecha)
-            );
-
-            statement.setString(
-                    2,
-                    movimiento.getTipo()
-            );
-
-            statement.setInt(
-                    3,
-                    movimiento.getCantidad()
-            );
-
-            statement.setInt(
-                    4,
-                    movimiento.getSaldo()
-            );
-
-            statement.setString(
-                    5,
-                    movimiento.getMotivo()
-            );
-
-            statement.setInt(
-                    6,
-                    movimiento.getIdProducto()
-            );
-
-            statement.setInt(
-                    7,
-                    movimiento.getIdUsuario()
-            );
-
-            statement.setInt(
-                    8,
-                    movimiento.getIdMovimiento()
-            );
+            statement.setTimestamp(1, Timestamp.valueOf(fecha));
+            statement.setString(2, movimiento.getTipo());
+            statement.setInt(3, movimiento.getCantidad());
+            statement.setInt(4, movimiento.getSaldo());
+            statement.setString(5, movimiento.getMotivo());
+            statement.setInt(6, movimiento.getIdProducto());
+            statement.setInt(7, movimiento.getIdUsuario());
+            statement.setInt(8, movimiento.getIdMovimiento());
 
             statement.executeUpdate();
 
         } catch (SQLException e) {
-
             throw new RuntimeException(
                     "Error al actualizar el movimiento de inventario.",
                     e
@@ -358,27 +255,20 @@ public class MovimientoInventarioDAOImpl
     }
 
     @Override
-    public void eliminar(
-            int idMovimiento) {
+    public void eliminar(int idMovimiento) {
 
         String sql =
                 "DELETE FROM MOVIMIENTO_INVENTARIO "
                 + "WHERE id_movimiento = ?";
 
-        try (Connection conexion =
-                     ConexionDB.obtenerConexion();
+        try (Connection conexion = ConexionDB.obtenerConexion();
              PreparedStatement statement =
                      conexion.prepareStatement(sql)) {
 
-            statement.setInt(
-                    1,
-                    idMovimiento
-            );
-
+            statement.setInt(1, idMovimiento);
             statement.executeUpdate();
 
         } catch (SQLException e) {
-
             throw new RuntimeException(
                     "Error al eliminar el movimiento de inventario.",
                     e
@@ -390,50 +280,24 @@ public class MovimientoInventarioDAOImpl
             ResultSet resultado)
             throws SQLException {
 
-        MovimientoInventario movimiento =
-                new MovimientoInventario();
+        MovimientoInventario movimiento = new MovimientoInventario();
 
         movimiento.setIdMovimiento(
-                resultado.getInt(
-                        "id_movimiento"
-                )
+                resultado.getInt("id_movimiento")
         );
 
-        Timestamp fecha =
-                resultado.getTimestamp(
-                        "fecha"
-                );
+        Timestamp fecha = resultado.getTimestamp("fecha");
 
         if (fecha != null) {
-
-            movimiento.setFecha(
-                    fecha.toLocalDateTime()
-            );
+            movimiento.setFecha(fecha.toLocalDateTime());
         }
 
-        movimiento.setTipo(
-                resultado.getString("tipo")
-        );
-
-        movimiento.setCantidad(
-                resultado.getInt("cantidad")
-        );
-
-        movimiento.setSaldo(
-                resultado.getInt("saldo")
-        );
-
-        movimiento.setMotivo(
-                resultado.getString("motivo")
-        );
-
-        movimiento.setIdProducto(
-                resultado.getInt("id_producto")
-        );
-
-        movimiento.setIdUsuario(
-                resultado.getInt("id_usuario")
-        );
+        movimiento.setTipo(resultado.getString("tipo"));
+        movimiento.setCantidad(resultado.getInt("cantidad"));
+        movimiento.setSaldo(resultado.getInt("saldo"));
+        movimiento.setMotivo(resultado.getString("motivo"));
+        movimiento.setIdProducto(resultado.getInt("id_producto"));
+        movimiento.setIdUsuario(resultado.getInt("id_usuario"));
 
         return movimiento;
     }

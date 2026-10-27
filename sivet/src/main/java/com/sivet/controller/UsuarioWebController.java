@@ -1,12 +1,12 @@
+
 package com.sivet.controller;
 
 import com.sivet.dao.RolDAO;
-import com.sivet.dao.RolDAOImpl;
 import com.sivet.dao.UsuarioDAO;
-import com.sivet.dao.UsuarioDAOImpl;
 import com.sivet.model.Rol;
 import com.sivet.model.Usuario;
 import com.sivet.service.PasswordService;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,16 +24,17 @@ public class UsuarioWebController {
     private final RolDAO rolDAO;
     private final PasswordService passwordService;
 
-    public UsuarioWebController() {
-        this.usuarioDAO = new UsuarioDAOImpl();
-        this.rolDAO = new RolDAOImpl();
-        this.passwordService = new PasswordService();
+    public UsuarioWebController(
+            UsuarioDAO usuarioDAO,
+            RolDAO rolDAO,
+            PasswordService passwordService) {
+
+        this.usuarioDAO = usuarioDAO;
+        this.rolDAO = rolDAO;
+        this.passwordService = passwordService;
     }
 
-    // =====================================================
     // LISTAR USUARIOS
-    // =====================================================
-
     @GetMapping("/usuarios")
     public String listarUsuarios(
             Model model,
@@ -42,11 +43,11 @@ public class UsuarioWebController {
         Usuario usuarioSesion =
                 (Usuario) session.getAttribute("usuario");
 
-        // Solo administrador
         if (usuarioSesion == null) {
             return "redirect:/login";
         }
 
+        // Solo administrador
         if (usuarioSesion.getIdRol() != 1) {
             return "redirect:/";
         }
@@ -60,10 +61,7 @@ public class UsuarioWebController {
         return "usuarios";
     }
 
-    // =====================================================
     // FORMULARIO NUEVO USUARIO
-    // =====================================================
-
     @GetMapping("/usuarios/nuevo")
     public String mostrarFormularioNuevo(
             Model model,
@@ -86,24 +84,13 @@ public class UsuarioWebController {
         return "usuario-form";
     }
 
-    // =====================================================
     // GUARDAR USUARIO
-    // =====================================================
-
     @PostMapping("/usuarios/guardar")
     public String guardarUsuario(
-            @RequestParam("nombreCompleto")
-            String nombreCompleto,
-
-            @RequestParam("usuario")
-            String nombreUsuario,
-
-            @RequestParam("contrasena")
-            String contrasena,
-
-            @RequestParam("idRol")
-            int idRol,
-
+            @RequestParam("nombreCompleto") String nombreCompleto,
+            @RequestParam("usuario") String nombreUsuario,
+            @RequestParam("contrasena") String contrasena,
+            @RequestParam("idRol") int idRol,
             HttpSession session) {
 
         Usuario usuarioSesion =
@@ -130,16 +117,10 @@ public class UsuarioWebController {
 
         Usuario usuario = new Usuario();
 
-        usuario.setNombreCompleto(
-                nombreCompleto.trim());
-
-        usuario.setUsuario(
-                nombreUsuario.trim());
-
+        usuario.setNombreCompleto(nombreCompleto.trim());
+        usuario.setUsuario(nombreUsuario.trim());
         usuario.setContrasenaHash(
-                passwordService.generarHash(
-                        contrasena));
-
+                passwordService.generarHash(contrasena));
         usuario.setIdRol(idRol);
 
         usuarioDAO.guardar(usuario);
@@ -147,10 +128,7 @@ public class UsuarioWebController {
         return "redirect:/usuarios";
     }
 
-    // =====================================================
     // EDITAR USUARIO
-    // =====================================================
-
     @GetMapping("/usuarios/editar/{id}")
     public String editarUsuario(
             @PathVariable("id") int id,
@@ -168,8 +146,7 @@ public class UsuarioWebController {
             return "redirect:/";
         }
 
-        Usuario usuario =
-                usuarioDAO.buscarPorId(id);
+        Usuario usuario = usuarioDAO.buscarPorId(id);
 
         if (usuario == null) {
             return "redirect:/usuarios";
@@ -181,28 +158,15 @@ public class UsuarioWebController {
         return "usuario-form";
     }
 
-    // =====================================================
     // ACTUALIZAR USUARIO
-    // =====================================================
-
     @PostMapping("/usuarios/actualizar")
     public String actualizarUsuario(
-            @RequestParam("idUsuario")
-            int idUsuario,
-
-            @RequestParam("nombreCompleto")
-            String nombreCompleto,
-
-            @RequestParam("usuario")
-            String nombreUsuario,
-
-            @RequestParam(value = "contrasena",
-                    required = false)
+            @RequestParam("idUsuario") int idUsuario,
+            @RequestParam("nombreCompleto") String nombreCompleto,
+            @RequestParam("usuario") String nombreUsuario,
+            @RequestParam(value = "contrasena", required = false)
             String contrasena,
-
-            @RequestParam("idRol")
-            int idRol,
-
+            @RequestParam("idRol") int idRol,
             HttpSession session) {
 
         Usuario usuarioSesion =
@@ -216,29 +180,29 @@ public class UsuarioWebController {
             return "redirect:/";
         }
 
-        Usuario usuario =
-                usuarioDAO.buscarPorId(idUsuario);
+        if (nombreCompleto == null
+                || nombreCompleto.isBlank()
+                || nombreUsuario == null
+                || nombreUsuario.isBlank()
+                || idRol <= 0) {
+
+            return "redirect:/usuarios?error=datos";
+        }
+
+        Usuario usuario = usuarioDAO.buscarPorId(idUsuario);
 
         if (usuario == null) {
             return "redirect:/usuarios";
         }
 
-        usuario.setNombreCompleto(
-                nombreCompleto.trim());
-
-        usuario.setUsuario(
-                nombreUsuario.trim());
-
+        usuario.setNombreCompleto(nombreCompleto.trim());
+        usuario.setUsuario(nombreUsuario.trim());
         usuario.setIdRol(idRol);
 
-        // Si escribió una contraseña nueva,
-        // generar un nuevo hash BCrypt.
-        if (contrasena != null
-                && !contrasena.isBlank()) {
-
+        // Cambiar la contraseña solo si se ingresó una nueva.
+        if (contrasena != null && !contrasena.isBlank()) {
             usuario.setContrasenaHash(
-                    passwordService.generarHash(
-                            contrasena));
+                    passwordService.generarHash(contrasena));
         }
 
         usuarioDAO.actualizar(usuario);
@@ -246,10 +210,7 @@ public class UsuarioWebController {
         return "redirect:/usuarios";
     }
 
-    // =====================================================
     // ELIMINAR USUARIO
-    // =====================================================
-
     @PostMapping("/usuarios/eliminar/{id}")
     public String eliminarUsuario(
             @PathVariable("id") int id,
@@ -266,8 +227,7 @@ public class UsuarioWebController {
             return "redirect:/";
         }
 
-        // Evitar que el administrador elimine
-        // su propia cuenta.
+        // Evitar que el administrador elimine su propia cuenta.
         if (usuarioSesion.getIdUsuario() == id) {
             return "redirect:/usuarios?error=propio";
         }

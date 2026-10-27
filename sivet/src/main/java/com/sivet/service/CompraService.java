@@ -12,16 +12,21 @@ import com.sivet.model.DetalleCompra;
 import com.sivet.model.MovimientoInventario;
 import com.sivet.model.Producto;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.sql.Connection;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Service
 public class CompraService {
 
     private final CompraDAO compraDAO;
     private final ProductoDAO productoDAO;
     private final InventarioService inventarioService;
 
+    // Constructor de dos parámetros: conserva compatibilidad con las pruebas.
     public CompraService(
             CompraDAO compraDAO,
             ProductoDAO productoDAO) {
@@ -31,6 +36,8 @@ public class CompraService {
         this.inventarioService = null;
     }
 
+    // Constructor que Spring utilizará para inyectar las dependencias.
+    @Autowired
     public CompraService(
             CompraDAO compraDAO,
             ProductoDAO productoDAO,
@@ -41,10 +48,7 @@ public class CompraService {
         this.inventarioService = inventarioService;
     }
 
-    // =========================================================
-    // REGISTRAR COMPRA SIMPLE
-    // =========================================================
-
+    // Registrar compra simple
     public boolean registrarCompra(Compra compra) {
 
         if (compra == null || compra.getTotal() < 0) {
@@ -67,10 +71,7 @@ public class CompraService {
         }
     }
 
-    // =========================================================
-    // LISTAR COMPRAS
-    // =========================================================
-
+    // Listar compras
     public List<Compra> listarCompras() {
 
         try {
@@ -83,10 +84,7 @@ public class CompraService {
         }
     }
 
-    // =========================================================
-    // BUSCAR COMPRA
-    // =========================================================
-
+    // Buscar compra por ID
     public Compra buscarCompraPorId(int idCompra) {
 
         if (idCompra <= 0) {
@@ -103,10 +101,7 @@ public class CompraService {
         }
     }
 
-    // =========================================================
-    // ACTUALIZAR COMPRA
-    // =========================================================
-
+    // Actualizar compra
     public boolean actualizarCompra(Compra compra) {
 
         if (compra == null
@@ -130,10 +125,7 @@ public class CompraService {
         }
     }
 
-    // =========================================================
-    // ELIMINAR COMPRA
-    // =========================================================
-
+    // Eliminar compra
     public boolean eliminarCompra(int idCompra) {
 
         if (idCompra <= 0) {
@@ -151,10 +143,7 @@ public class CompraService {
         }
     }
 
-    // =========================================================
-    // AUMENTAR STOCK
-    // =========================================================
-
+    // Aumentar stock
     public boolean aumentarStock(int idProducto, int cantidad) {
 
         if (idProducto <= 0 || cantidad <= 0) {
@@ -183,10 +172,7 @@ public class CompraService {
         }
     }
 
-    // =========================================================
-    // SOBRECARGA CON ID DE USUARIO
-    // =========================================================
-
+    // Registrar compra con ID de usuario
     public boolean registrarCompraConEntrada(
             Compra compra,
             int idProducto,
@@ -202,10 +188,7 @@ public class CompraService {
         );
     }
 
-    // =========================================================
-    // SOBRECARGA UTILIZADA POR LA VISTA
-    // =========================================================
-
+    // Sobrecarga utilizada por la vista
     public boolean registrarCompraConEntrada(
             Compra compra,
             int idProducto,
@@ -225,11 +208,7 @@ public class CompraService {
         );
     }
 
-    // =========================================================
-    // MÉTODO PRINCIPAL
-    // IMPORTANTE: DEBE SER PUBLIC
-    // =========================================================
-
+    // Método principal para registrar compra y entrada de inventario
     public boolean registrarCompraConEntrada(
             Compra compra,
             int idProducto,
@@ -237,7 +216,6 @@ public class CompraService {
             int idUsuario,
             String motivo) {
 
-        // Validaciones.
         if (compra == null
                 || idProducto <= 0
                 || cantidad <= 0
@@ -256,10 +234,7 @@ public class CompraService {
             compra.setFecha(LocalDateTime.now());
         }
 
-        // =====================================================
-        // DAO REALES: TRANSACCIÓN COMPLETA
-        // =====================================================
-
+        // DAO reales: transacción completa
         if (compraDAO instanceof CompraDAOImpl
                 && productoDAO instanceof ProductoDAOImpl) {
 
@@ -285,15 +260,14 @@ public class CompraService {
                 MovimientoInventarioDAOImpl movimientoDAOImpl =
                         new MovimientoInventarioDAOImpl();
 
-                // 1. Guardar la cabecera de la compra.
+                // 1. Guardar la cabecera de la compra
                 compra.setIdUsuario(idUsuario);
                 compraDAOImpl.guardar(compra, conexion);
 
-                // 2. Buscar el producto.
-                Producto producto =
-                        productoDAOImpl.buscarPorId(
-                                idProducto,
-                                conexion);
+                // 2. Buscar el producto
+                Producto producto = productoDAOImpl.buscarPorId(
+                        idProducto,
+                        conexion);
 
                 if (producto == null) {
                     throw new RuntimeException(
@@ -302,7 +276,7 @@ public class CompraService {
                                     + " no existe.");
                 }
 
-                // 3. Crear y guardar el detalle.
+                // 3. Crear y guardar el detalle
                 double costoUnitario =
                         Math.round(
                                 (compra.getTotal() / cantidad) * 100.0
@@ -317,15 +291,14 @@ public class CompraService {
 
                 detalleCompraDAO.guardar(detalle, conexion);
 
-                // 4. Aumentar el stock.
+                // 4. Aumentar el stock
                 int nuevoStock =
                         producto.getStockActual() + cantidad;
 
                 producto.setStockActual(nuevoStock);
-
                 productoDAOImpl.actualizar(producto, conexion);
 
-                // 5. Registrar movimiento de entrada.
+                // 5. Registrar movimiento de entrada
                 MovimientoInventario movimiento =
                         new MovimientoInventario();
 
@@ -338,7 +311,7 @@ public class CompraService {
 
                 movimientoDAOImpl.guardar(movimiento, conexion);
 
-                // 6. Confirmar todas las operaciones.
+                // 6. Confirmar todas las operaciones
                 conexion.commit();
 
                 System.out.println("Compra registrada correctamente.");
@@ -350,7 +323,7 @@ public class CompraService {
 
             } catch (Exception e) {
 
-                // Si falla una operación, deshacer la transacción.
+                // Si falla una operación, deshacer la transacción
                 if (conexion != null) {
                     try {
                         conexion.rollback();
@@ -381,10 +354,7 @@ public class CompraService {
             }
         }
 
-        // =====================================================
-        // DAO SIMULADOS: COMPATIBILIDAD CON LOS TESTS
-        // =====================================================
-
+        // DAO simulados: compatibilidad con las pruebas
         try {
             compra.setIdUsuario(idUsuario);
             compraDAO.guardar(compra);

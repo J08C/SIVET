@@ -1,5 +1,7 @@
+
 package com.sivet.config;
 
+import com.sivet.controller.AuthInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -9,24 +11,23 @@ public class WebConfig implements WebMvcConfigurer {
 
     private final AuthInterceptor authInterceptor;
 
-    public WebConfig() {
-        this.authInterceptor = new AuthInterceptor();
+    public WebConfig(AuthInterceptor authInterceptor) {
+        this.authInterceptor = authInterceptor;
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-
         registry.addInterceptor(authInterceptor)
                 .addPathPatterns("/**")
                 .excludePathPatterns(
                         "/login",
                         "/login/**",
-                        "/logout",
                         "/css/**",
                         "/js/**",
                         "/images/**",
                         "/img/**",
                         "/static/**",
+                        "/webjars/**",
                         "/favicon.ico"
                 );
     }

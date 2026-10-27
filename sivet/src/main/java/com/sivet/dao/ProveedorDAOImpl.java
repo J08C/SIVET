@@ -1,6 +1,8 @@
+
 package com.sivet.dao;
 
 import com.sivet.model.Proveedor;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 // Implementación de ProveedorDAO
+@Repository
 public class ProveedorDAOImpl implements ProveedorDAO {
 
     // Guardar proveedor
@@ -39,14 +42,12 @@ public class ProveedorDAOImpl implements ProveedorDAO {
 
             // Obtener ID generado
             try (ResultSet claves = statement.getGeneratedKeys()) {
-
                 if (claves.next()) {
                     proveedor.setIdProveedor(claves.getInt(1));
                 }
             }
 
         } catch (SQLException e) {
-
             throw new RuntimeException(
                     "Error al guardar el proveedor.",
                     e
@@ -71,14 +72,12 @@ public class ProveedorDAOImpl implements ProveedorDAO {
             statement.setInt(1, idProveedor);
 
             try (ResultSet resultado = statement.executeQuery()) {
-
                 if (resultado.next()) {
                     return convertirProveedor(resultado);
                 }
             }
 
         } catch (SQLException e) {
-
             throw new RuntimeException(
                     "Error al buscar el proveedor.",
                     e
@@ -106,12 +105,10 @@ public class ProveedorDAOImpl implements ProveedorDAO {
              ResultSet resultado = statement.executeQuery()) {
 
             while (resultado.next()) {
-
                 proveedores.add(convertirProveedor(resultado));
             }
 
         } catch (SQLException e) {
-
             throw new RuntimeException(
                     "Error al listar los proveedores.",
                     e
@@ -150,7 +147,6 @@ public class ProveedorDAOImpl implements ProveedorDAO {
             statement.executeUpdate();
 
         } catch (SQLException e) {
-
             throw new RuntimeException(
                     "Error al actualizar el proveedor.",
                     e
@@ -173,7 +169,6 @@ public class ProveedorDAOImpl implements ProveedorDAO {
             statement.executeUpdate();
 
         } catch (SQLException e) {
-
             throw new RuntimeException(
                     "Error al eliminar el proveedor.",
                     e
@@ -190,27 +185,21 @@ public class ProveedorDAOImpl implements ProveedorDAO {
         proveedor.setIdProveedor(
                 resultado.getInt("id_proveedor")
         );
-
         proveedor.setRuc(
                 resultado.getString("ruc")
         );
-
         proveedor.setRazonSocial(
                 resultado.getString("razon_social")
         );
-
         proveedor.setTelefono(
                 resultado.getString("telefono")
         );
-
         proveedor.setCorreo(
                 resultado.getString("correo")
         );
-
         proveedor.setDireccion(
                 resultado.getString("direccion")
         );
-
         proveedor.setEstado(
                 resultado.getBoolean("estado")
         );

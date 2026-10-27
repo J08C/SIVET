@@ -1,3 +1,4 @@
+
 package com.sivet.dao;
 
 import com.sivet.model.Usuario;
@@ -10,7 +11,10 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Repository;
+
 // Implementación de UsuarioDAO
+@Repository
 public class UsuarioDAOImpl implements UsuarioDAO {
 
     // Guardar usuario
@@ -37,14 +41,12 @@ public class UsuarioDAOImpl implements UsuarioDAO {
 
             // Obtener ID generado
             try (ResultSet claves = statement.getGeneratedKeys()) {
-
                 if (claves.next()) {
                     usuario.setIdUsuario(claves.getInt(1));
                 }
             }
 
         } catch (SQLException e) {
-
             throw new RuntimeException(
                     "Error al guardar el usuario.",
                     e
@@ -69,14 +71,12 @@ public class UsuarioDAOImpl implements UsuarioDAO {
             statement.setInt(1, idUsuario);
 
             try (ResultSet resultado = statement.executeQuery()) {
-
                 if (resultado.next()) {
                     return convertirUsuario(resultado);
                 }
             }
 
         } catch (SQLException e) {
-
             throw new RuntimeException(
                     "Error al buscar el usuario.",
                     e
@@ -103,14 +103,12 @@ public class UsuarioDAOImpl implements UsuarioDAO {
             statement.setString(1, usuario);
 
             try (ResultSet resultado = statement.executeQuery()) {
-
                 if (resultado.next()) {
                     return convertirUsuario(resultado);
                 }
             }
 
         } catch (SQLException e) {
-
             throw new RuntimeException(
                     "Error al buscar el usuario por nombre.",
                     e
@@ -138,12 +136,10 @@ public class UsuarioDAOImpl implements UsuarioDAO {
              ResultSet resultado = statement.executeQuery()) {
 
             while (resultado.next()) {
-
                 usuarios.add(convertirUsuario(resultado));
             }
 
         } catch (SQLException e) {
-
             throw new RuntimeException(
                     "Error al listar los usuarios.",
                     e
@@ -178,7 +174,6 @@ public class UsuarioDAOImpl implements UsuarioDAO {
             statement.executeUpdate();
 
         } catch (SQLException e) {
-
             throw new RuntimeException(
                     "Error al actualizar el usuario.",
                     e
@@ -190,8 +185,7 @@ public class UsuarioDAOImpl implements UsuarioDAO {
     @Override
     public void eliminar(int idUsuario) {
 
-        String sql =
-                "DELETE FROM USUARIO WHERE id_usuario = ?";
+        String sql = "DELETE FROM USUARIO WHERE id_usuario = ?";
 
         try (Connection conexion = ConexionDB.obtenerConexion();
              PreparedStatement statement = conexion.prepareStatement(sql)) {
@@ -201,7 +195,6 @@ public class UsuarioDAOImpl implements UsuarioDAO {
             statement.executeUpdate();
 
         } catch (SQLException e) {
-
             throw new RuntimeException(
                     "Error al eliminar el usuario.",
                     e
@@ -215,25 +208,11 @@ public class UsuarioDAOImpl implements UsuarioDAO {
 
         Usuario usuario = new Usuario();
 
-        usuario.setIdUsuario(
-                resultado.getInt("id_usuario")
-        );
-
-        usuario.setNombreCompleto(
-                resultado.getString("nombre_completo")
-        );
-
-        usuario.setUsuario(
-                resultado.getString("usuario")
-        );
-
-        usuario.setContrasenaHash(
-                resultado.getString("contrasena_hash")
-        );
-
-        usuario.setIdRol(
-                resultado.getInt("id_rol")
-        );
+        usuario.setIdUsuario(resultado.getInt("id_usuario"));
+        usuario.setNombreCompleto(resultado.getString("nombre_completo"));
+        usuario.setUsuario(resultado.getString("usuario"));
+        usuario.setContrasenaHash(resultado.getString("contrasena_hash"));
+        usuario.setIdRol(resultado.getInt("id_rol"));
 
         return usuario;
     }

@@ -1,10 +1,8 @@
+
 package com.sivet.controller;
 
-import com.sivet.dao.UsuarioDAO;
-import com.sivet.dao.UsuarioDAOImpl;
 import com.sivet.model.Usuario;
 import com.sivet.service.AuthService;
-import com.sivet.service.PasswordService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -19,19 +17,8 @@ public class LoginWebController {
 
     private final AuthService authService;
 
-    public LoginWebController() {
-
-        UsuarioDAO usuarioDAO =
-                new UsuarioDAOImpl();
-
-        PasswordService passwordService =
-                new PasswordService();
-
-        this.authService =
-                new AuthService(
-                        usuarioDAO,
-                        passwordService
-                );
+    public LoginWebController(AuthService authService) {
+        this.authService = authService;
     }
 
     @GetMapping("/login")
@@ -53,7 +40,6 @@ public class LoginWebController {
                 );
 
         if (usuarioAutenticado == null) {
-
             model.addAttribute(
                     "error",
                     "Usuario o contraseña incorrectos."
@@ -71,11 +57,8 @@ public class LoginWebController {
     }
 
     @PostMapping("/logout")
-    public String cerrarSesion(
-            HttpSession session) {
-
+    public String cerrarSesion(HttpSession session) {
         session.invalidate();
-
         return "redirect:/login";
     }
 }

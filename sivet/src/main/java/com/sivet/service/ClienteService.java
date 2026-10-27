@@ -1,18 +1,19 @@
+
 package com.sivet.service;
 
 import com.sivet.dao.ClienteDAO;
 import com.sivet.model.Cliente;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
-// Contiene la lógica de negocio relacionada con los clientes
+@Service
 public class ClienteService {
 
-    // Dependemos de la interfaz ClienteDAO
     private final ClienteDAO clienteDAO;
 
-    // Inyección de dependencia
+    // Inyección de dependencias
     public ClienteService(ClienteDAO clienteDAO) {
         this.clienteDAO = clienteDAO;
     }
@@ -20,7 +21,6 @@ public class ClienteService {
     // Registra un nuevo cliente
     public boolean registrarCliente(Cliente cliente) {
 
-        // El cliente no puede ser nulo
         if (cliente == null) {
             return false;
         }
@@ -98,9 +98,7 @@ public class ClienteService {
 
         // Comprobamos que el cliente exista
         Cliente clienteExistente =
-                clienteDAO.buscarPorId(
-                        cliente.getIdCliente()
-                );
+                clienteDAO.buscarPorId(cliente.getIdCliente());
 
         if (clienteExistente == null) {
             return false;
@@ -119,8 +117,7 @@ public class ClienteService {
         }
 
         // Comprobamos que el cliente exista
-        Cliente cliente =
-                clienteDAO.buscarPorId(idCliente);
+        Cliente cliente = clienteDAO.buscarPorId(idCliente);
 
         if (cliente == null) {
             return false;

@@ -5,12 +5,14 @@ import com.sivet.model.Venta;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+@Service
 public class ReporteExcelService {
 
     private static final DateTimeFormatter FORMATO_FECHA =
@@ -24,11 +26,7 @@ public class ReporteExcelService {
 
             Sheet hoja = workbook.createSheet("Ventas");
 
-            // =========================
-            // ESTILOS DEL REPORTE
-            // =========================
-
-            // Encabezado azul oscuro con letras blancas.
+            // Estilo del encabezado.
             CellStyle estiloEncabezado = workbook.createCellStyle();
 
             Font fuenteEncabezado = workbook.createFont();
@@ -45,7 +43,6 @@ public class ReporteExcelService {
             estiloEncabezado.setVerticalAlignment(
                     VerticalAlignment.CENTER);
             estiloEncabezado.setWrapText(true);
-
             ponerBordes(estiloEncabezado);
 
             // Estilo para filas pares.
@@ -68,24 +65,22 @@ public class ReporteExcelService {
                     VerticalAlignment.CENTER);
             ponerBordes(estiloFilaImpar);
 
-            // Estilo para importes monetarios.
-            CellStyle estiloMonedaPar =
-                    workbook.createCellStyle();
+            // Estilos para importes monetarios.
+            CellStyle estiloMonedaPar = workbook.createCellStyle();
             estiloMonedaPar.cloneStyleFrom(estiloFilaPar);
             estiloMonedaPar.setAlignment(HorizontalAlignment.RIGHT);
             estiloMonedaPar.setDataFormat(
                     workbook.createDataFormat().getFormat(
                             "\"S/ \"#,##0.00"));
 
-            CellStyle estiloMonedaImpar =
-                    workbook.createCellStyle();
+            CellStyle estiloMonedaImpar = workbook.createCellStyle();
             estiloMonedaImpar.cloneStyleFrom(estiloFilaImpar);
             estiloMonedaImpar.setAlignment(HorizontalAlignment.RIGHT);
             estiloMonedaImpar.setDataFormat(
                     workbook.createDataFormat().getFormat(
                             "\"S/ \"#,##0.00"));
 
-            // Estilo para identificadores.
+            // Estilos para identificadores.
             CellStyle estiloIdPar = workbook.createCellStyle();
             estiloIdPar.cloneStyleFrom(estiloFilaPar);
             estiloIdPar.setAlignment(HorizontalAlignment.CENTER);
@@ -94,7 +89,7 @@ public class ReporteExcelService {
             estiloIdImpar.cloneStyleFrom(estiloFilaImpar);
             estiloIdImpar.setAlignment(HorizontalAlignment.CENTER);
 
-            // Estilo para fecha.
+            // Estilos para fechas.
             CellStyle estiloFechaPar = workbook.createCellStyle();
             estiloFechaPar.cloneStyleFrom(estiloFilaPar);
             estiloFechaPar.setAlignment(HorizontalAlignment.CENTER);
@@ -103,10 +98,7 @@ public class ReporteExcelService {
             estiloFechaImpar.cloneStyleFrom(estiloFilaImpar);
             estiloFechaImpar.setAlignment(HorizontalAlignment.CENTER);
 
-            // =========================
-            // ENCABEZADOS
-            // =========================
-
+            // Encabezados.
             String[] encabezados = {
                     "ID Venta",
                     "Fecha",
@@ -124,10 +116,7 @@ public class ReporteExcelService {
                 celda.setCellStyle(estiloEncabezado);
             }
 
-            // =========================
-            // DATOS DE LAS VENTAS
-            // =========================
-
+            // Datos de las ventas.
             int numeroFila = 1;
             double totalVentas = 0;
             int cantidadVentas = 0;
@@ -141,26 +130,24 @@ public class ReporteExcelService {
 
                     Row fila = hoja.createRow(numeroFila);
 
+                    // Se alternan los estilos según la fila.
                     boolean filaImpar = numeroFila % 2 != 0;
 
-                    CellStyle estiloFila =
-                            filaImpar ? estiloFilaImpar : estiloFilaPar;
+                    CellStyle estiloId = filaImpar
+                            ? estiloIdImpar : estiloIdPar;
 
-                    CellStyle estiloId =
-                            filaImpar ? estiloIdImpar : estiloIdPar;
+                    CellStyle estiloFecha = filaImpar
+                            ? estiloFechaImpar : estiloFechaPar;
 
-                    CellStyle estiloFecha =
-                            filaImpar ? estiloFechaImpar : estiloFechaPar;
-
-                    CellStyle estiloMoneda =
-                            filaImpar ? estiloMonedaImpar : estiloMonedaPar;
+                    CellStyle estiloMoneda = filaImpar
+                            ? estiloMonedaImpar : estiloMonedaPar;
 
                     // ID de venta.
                     Cell celdaIdVenta = fila.createCell(0);
                     celdaIdVenta.setCellValue(venta.getIdVenta());
                     celdaIdVenta.setCellStyle(estiloId);
 
-                    // Fecha de venta.
+                    // Fecha.
                     Cell celdaFecha = fila.createCell(1);
 
                     if (venta.getFecha() != null) {
@@ -202,17 +189,10 @@ public class ReporteExcelService {
                 }
             }
 
-            // =========================
-            // FILA DE TOTALES
-            // =========================
-
-            // Se agrega una fila de resumen únicamente si hay ventas.
+            // Fila de totales, solo cuando existen ventas.
             if (cantidadVentas > 0) {
 
                 Row filaTotal = hoja.createRow(numeroFila);
-
-                Cell celdaEtiqueta = filaTotal.createCell(0);
-                celdaEtiqueta.setCellValue("TOTAL GENERAL");
 
                 CellStyle estiloTotal = workbook.createCellStyle();
 
@@ -229,11 +209,14 @@ public class ReporteExcelService {
                         VerticalAlignment.CENTER);
                 ponerBordes(estiloTotal);
 
+                Cell celdaEtiqueta = filaTotal.createCell(0);
+                celdaEtiqueta.setCellValue("TOTAL GENERAL");
                 celdaEtiqueta.setCellStyle(estiloTotal);
 
-                // Combinar las primeras dos columnas para la etiqueta.
+                // Combinar las primeras dos columnas.
                 hoja.addMergedRegion(
-                        new CellRangeAddress(numeroFila, numeroFila, 0, 1));
+                        new CellRangeAddress(
+                                numeroFila, numeroFila, 0, 1));
 
                 Cell celdaTotalGeneral = filaTotal.createCell(2);
                 celdaTotalGeneral.setCellValue(totalVentas);
@@ -254,28 +237,23 @@ public class ReporteExcelService {
                         "Ventas: " + cantidadVentas);
                 celdaCantidad.setCellStyle(estiloTotal);
 
-                // La última celda mantiene el estilo del resumen.
                 Cell celdaFinal = filaTotal.createCell(4);
                 celdaFinal.setCellStyle(estiloTotal);
 
                 filaTotal.setHeightInPoints(25);
             }
 
-            // =========================
-            // PRESENTACIÓN DE LA HOJA
-            // =========================
-
-            // Ajustar el ancho de las columnas.
+            // Presentación de la hoja.
             hoja.setColumnWidth(0, 15 * 256);
             hoja.setColumnWidth(1, 23 * 256);
             hoja.setColumnWidth(2, 18 * 256);
             hoja.setColumnWidth(3, 17 * 256);
             hoja.setColumnWidth(4, 17 * 256);
 
-            // Mantener los encabezados visibles al desplazarse.
+            // Mantener encabezados visibles.
             hoja.createFreezePane(0, 1);
 
-            // Filtro para buscar y ordenar las ventas.
+            // Filtro de datos.
             hoja.setAutoFilter(
                     new CellRangeAddress(
                             0,
@@ -283,7 +261,7 @@ public class ReporteExcelService {
                             0,
                             encabezados.length - 1));
 
-            // Configuración para impresión.
+            // Configuración de impresión.
             hoja.setPrintGridlines(false);
             hoja.setDisplayGridlines(false);
 
@@ -298,7 +276,7 @@ public class ReporteExcelService {
             hoja.setRepeatingRows(
                     new CellRangeAddress(0, 0, -1, -1));
 
-            // Escribir el archivo Excel en memoria.
+            // Generar el Excel en memoria.
             workbook.write(salida);
 
             return salida.toByteArray();
@@ -314,7 +292,8 @@ public class ReporteExcelService {
         estilo.setBorderLeft(BorderStyle.THIN);
         estilo.setBorderRight(BorderStyle.THIN);
 
-        estilo.setTopBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        estilo.setTopBorderColor(
+                IndexedColors.GREY_25_PERCENT.getIndex());
         estilo.setBottomBorderColor(
                 IndexedColors.GREY_25_PERCENT.getIndex());
         estilo.setLeftBorderColor(

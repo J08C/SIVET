@@ -1,11 +1,14 @@
+
 package com.sivet.service;
 
 import com.sivet.dao.UsuarioDAO;
 import com.sivet.model.Usuario;
+import org.springframework.stereotype.Service;
 
 /**
  * Servicio encargado de autenticar usuarios.
  */
+@Service
 public class AuthService {
 
     private final UsuarioDAO usuarioDAO;

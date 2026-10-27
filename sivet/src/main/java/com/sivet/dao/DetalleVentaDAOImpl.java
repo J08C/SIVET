@@ -1,6 +1,9 @@
+
 package com.sivet.dao;
 
 import com.sivet.model.DetalleVenta;
+
+import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 // Implementación de DetalleVentaDAO
+@Repository
 public class DetalleVentaDAOImpl implements DetalleVentaDAO {
 
     // Guardar detalle de venta
@@ -31,13 +35,9 @@ public class DetalleVentaDAOImpl implements DetalleVentaDAO {
                              sql,
                              Statement.RETURN_GENERATED_KEYS)) {
 
-            ejecutarGuardar(
-                    detalle,
-                    statement
-            );
+            ejecutarGuardar(detalle, statement);
 
         } catch (SQLException e) {
-
             throw new RuntimeException(
                     "Error al guardar el detalle de venta.",
                     e
@@ -63,16 +63,11 @@ public class DetalleVentaDAOImpl implements DetalleVentaDAO {
                              sql,
                              Statement.RETURN_GENERATED_KEYS)) {
 
-            ejecutarGuardar(
-                    detalle,
-                    statement
-            );
+            ejecutarGuardar(detalle, statement);
 
         } catch (SQLException e) {
-
             throw new RuntimeException(
-                    "Error al guardar el detalle "
-                    + "de venta en la transacción.",
+                    "Error al guardar el detalle de venta en la transacción.",
                     e
             );
         }
@@ -84,50 +79,25 @@ public class DetalleVentaDAOImpl implements DetalleVentaDAO {
             PreparedStatement statement)
             throws SQLException {
 
-        statement.setInt(
-                1,
-                detalle.getCantidad()
-        );
-
-        statement.setDouble(
-                2,
-                detalle.getPrecioUnitario()
-        );
-
-        statement.setDouble(
-                3,
-                detalle.getSubtotal()
-        );
-
-        statement.setInt(
-                4,
-                detalle.getIdVenta()
-        );
-
-        statement.setInt(
-                5,
-                detalle.getIdProducto()
-        );
+        statement.setInt(1, detalle.getCantidad());
+        statement.setDouble(2, detalle.getPrecioUnitario());
+        statement.setDouble(3, detalle.getSubtotal());
+        statement.setInt(4, detalle.getIdVenta());
+        statement.setInt(5, detalle.getIdProducto());
 
         statement.executeUpdate();
 
         // Obtener ID generado por PostgreSQL
-        try (ResultSet claves =
-                     statement.getGeneratedKeys()) {
-
+        try (ResultSet claves = statement.getGeneratedKeys()) {
             if (claves.next()) {
-
-                detalle.setIdDetalleVenta(
-                        claves.getInt(1)
-                );
+                detalle.setIdDetalleVenta(claves.getInt(1));
             }
         }
     }
 
     // Buscar detalle por ID
     @Override
-    public DetalleVenta buscarPorId(
-            int idDetalleVenta) {
+    public DetalleVenta buscarPorId(int idDetalleVenta) {
 
         String sql = """
                 SELECT id_detalle_venta,
@@ -140,32 +110,21 @@ public class DetalleVentaDAOImpl implements DetalleVentaDAO {
                 WHERE id_detalle_venta = ?
                 """;
 
-        try (Connection conexion =
-                     ConexionDB.obtenerConexion();
+        try (Connection conexion = ConexionDB.obtenerConexion();
              PreparedStatement statement =
                      conexion.prepareStatement(sql)) {
 
-            statement.setInt(
-                    1,
-                    idDetalleVenta
-            );
+            statement.setInt(1, idDetalleVenta);
 
-            try (ResultSet resultado =
-                         statement.executeQuery()) {
-
+            try (ResultSet resultado = statement.executeQuery()) {
                 if (resultado.next()) {
-
-                    return convertirDetalle(
-                            resultado
-                    );
+                    return convertirDetalle(resultado);
                 }
             }
 
         } catch (SQLException e) {
-
             throw new RuntimeException(
-                    "Error al buscar el detalle "
-                    + "de venta.",
+                    "Error al buscar el detalle de venta.",
                     e
             );
         }
@@ -188,30 +147,20 @@ public class DetalleVentaDAOImpl implements DetalleVentaDAO {
                 ORDER BY id_detalle_venta
                 """;
 
-        List<DetalleVenta> detalles =
-                new ArrayList<>();
+        List<DetalleVenta> detalles = new ArrayList<>();
 
-        try (Connection conexion =
-                     ConexionDB.obtenerConexion();
+        try (Connection conexion = ConexionDB.obtenerConexion();
              PreparedStatement statement =
                      conexion.prepareStatement(sql);
-             ResultSet resultado =
-                     statement.executeQuery()) {
+             ResultSet resultado = statement.executeQuery()) {
 
             while (resultado.next()) {
-
-                detalles.add(
-                        convertirDetalle(
-                                resultado
-                        )
-                );
+                detalles.add(convertirDetalle(resultado));
             }
 
         } catch (SQLException e) {
-
             throw new RuntimeException(
-                    "Error al listar los detalles "
-                    + "de venta.",
+                    "Error al listar los detalles de venta.",
                     e
             );
         }
@@ -221,8 +170,7 @@ public class DetalleVentaDAOImpl implements DetalleVentaDAO {
 
     // Listar detalles de una venta específica
     @Override
-    public List<DetalleVenta> listarPorVenta(
-            int idVenta) {
+    public List<DetalleVenta> listarPorVenta(int idVenta) {
 
         String sql = """
                 SELECT id_detalle_venta,
@@ -236,37 +184,23 @@ public class DetalleVentaDAOImpl implements DetalleVentaDAO {
                 ORDER BY id_detalle_venta
                 """;
 
-        List<DetalleVenta> detalles =
-                new ArrayList<>();
+        List<DetalleVenta> detalles = new ArrayList<>();
 
-        try (Connection conexion =
-                     ConexionDB.obtenerConexion();
+        try (Connection conexion = ConexionDB.obtenerConexion();
              PreparedStatement statement =
                      conexion.prepareStatement(sql)) {
 
-            statement.setInt(
-                    1,
-                    idVenta
-            );
+            statement.setInt(1, idVenta);
 
-            try (ResultSet resultado =
-                         statement.executeQuery()) {
-
+            try (ResultSet resultado = statement.executeQuery()) {
                 while (resultado.next()) {
-
-                    detalles.add(
-                            convertirDetalle(
-                                    resultado
-                            )
-                    );
+                    detalles.add(convertirDetalle(resultado));
                 }
             }
 
         } catch (SQLException e) {
-
             throw new RuntimeException(
-                    "Error al listar detalles "
-                    + "de la venta.",
+                    "Error al listar detalles de la venta.",
                     e
             );
         }
@@ -276,8 +210,7 @@ public class DetalleVentaDAOImpl implements DetalleVentaDAO {
 
     // Actualizar detalle
     @Override
-    public void actualizar(
-            DetalleVenta detalle) {
+    public void actualizar(DetalleVenta detalle) {
 
         String sql = """
                 UPDATE DETALLE_VENTA
@@ -289,48 +222,22 @@ public class DetalleVentaDAOImpl implements DetalleVentaDAO {
                 WHERE id_detalle_venta = ?
                 """;
 
-        try (Connection conexion =
-                     ConexionDB.obtenerConexion();
+        try (Connection conexion = ConexionDB.obtenerConexion();
              PreparedStatement statement =
                      conexion.prepareStatement(sql)) {
 
-            statement.setInt(
-                    1,
-                    detalle.getCantidad()
-            );
-
-            statement.setDouble(
-                    2,
-                    detalle.getPrecioUnitario()
-            );
-
-            statement.setDouble(
-                    3,
-                    detalle.getSubtotal()
-            );
-
-            statement.setInt(
-                    4,
-                    detalle.getIdVenta()
-            );
-
-            statement.setInt(
-                    5,
-                    detalle.getIdProducto()
-            );
-
-            statement.setInt(
-                    6,
-                    detalle.getIdDetalleVenta()
-            );
+            statement.setInt(1, detalle.getCantidad());
+            statement.setDouble(2, detalle.getPrecioUnitario());
+            statement.setDouble(3, detalle.getSubtotal());
+            statement.setInt(4, detalle.getIdVenta());
+            statement.setInt(5, detalle.getIdProducto());
+            statement.setInt(6, detalle.getIdDetalleVenta());
 
             statement.executeUpdate();
 
         } catch (SQLException e) {
-
             throw new RuntimeException(
-                    "Error al actualizar el detalle "
-                    + "de venta.",
+                    "Error al actualizar el detalle de venta.",
                     e
             );
         }
@@ -338,78 +245,43 @@ public class DetalleVentaDAOImpl implements DetalleVentaDAO {
 
     // Eliminar detalle
     @Override
-    public void eliminar(
-            int idDetalleVenta) {
+    public void eliminar(int idDetalleVenta) {
 
         String sql =
                 "DELETE FROM DETALLE_VENTA "
                 + "WHERE id_detalle_venta = ?";
 
-        try (Connection conexion =
-                     ConexionDB.obtenerConexion();
+        try (Connection conexion = ConexionDB.obtenerConexion();
              PreparedStatement statement =
                      conexion.prepareStatement(sql)) {
 
-            statement.setInt(
-                    1,
-                    idDetalleVenta
-            );
-
+            statement.setInt(1, idDetalleVenta);
             statement.executeUpdate();
 
         } catch (SQLException e) {
-
             throw new RuntimeException(
-                    "Error al eliminar el detalle "
-                    + "de venta.",
+                    "Error al eliminar el detalle de venta.",
                     e
             );
         }
     }
 
     // Convertir resultado SQL a objeto DetalleVenta
-    private DetalleVenta convertirDetalle(
-            ResultSet resultado)
+    private DetalleVenta convertirDetalle(ResultSet resultado)
             throws SQLException {
 
-        DetalleVenta detalle =
-                new DetalleVenta();
+        DetalleVenta detalle = new DetalleVenta();
 
         detalle.setIdDetalleVenta(
-                resultado.getInt(
-                        "id_detalle_venta"
-                )
+                resultado.getInt("id_detalle_venta")
         );
-
-        detalle.setCantidad(
-                resultado.getInt(
-                        "cantidad"
-                )
-        );
-
+        detalle.setCantidad(resultado.getInt("cantidad"));
         detalle.setPrecioUnitario(
-                resultado.getDouble(
-                        "precio_unitario"
-                )
+                resultado.getDouble("precio_unitario")
         );
-
-        detalle.setSubtotal(
-                resultado.getDouble(
-                        "subtotal"
-                )
-        );
-
-        detalle.setIdVenta(
-                resultado.getInt(
-                        "id_venta"
-                )
-        );
-
-        detalle.setIdProducto(
-                resultado.getInt(
-                        "id_producto"
-                )
-        );
+        detalle.setSubtotal(resultado.getDouble("subtotal"));
+        detalle.setIdVenta(resultado.getInt("id_venta"));
+        detalle.setIdProducto(resultado.getInt("id_producto"));
 
         return detalle;
     }
