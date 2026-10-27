@@ -1,6 +1,8 @@
+
 package com.sivet.dao;
 
 import com.sivet.model.Producto;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,6 +12,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class ProductoDAOImpl implements ProductoDAO {
 
     @Override
@@ -52,12 +55,9 @@ public class ProductoDAOImpl implements ProductoDAO {
 
         statement.executeUpdate();
 
-        try (ResultSet claves =
-                     statement.getGeneratedKeys()) {
-
+        try (ResultSet claves = statement.getGeneratedKeys()) {
             if (claves.next()) {
-                producto.setIdProducto(
-                        claves.getInt(1));
+                producto.setIdProducto(claves.getInt(1));
             }
         }
     }
@@ -65,12 +65,8 @@ public class ProductoDAOImpl implements ProductoDAO {
     @Override
     public Producto buscarPorId(int idProducto) {
 
-        try (Connection conexion =
-                     ConexionDB.obtenerConexion()) {
-
-            return buscarPorId(
-                    idProducto,
-                    conexion);
+        try (Connection conexion = ConexionDB.obtenerConexion()) {
+            return buscarPorId(idProducto, conexion);
 
         } catch (SQLException e) {
             throw new RuntimeException(
@@ -97,9 +93,7 @@ public class ProductoDAOImpl implements ProductoDAO {
 
             statement.setInt(1, idProducto);
 
-            try (ResultSet resultado =
-                         statement.executeQuery()) {
-
+            try (ResultSet resultado = statement.executeQuery()) {
                 if (resultado.next()) {
                     return convertirProducto(resultado);
                 }
@@ -107,8 +101,7 @@ public class ProductoDAOImpl implements ProductoDAO {
 
         } catch (SQLException e) {
             throw new RuntimeException(
-                    "Error al buscar el producto "
-                    + "en la transacción.", e);
+                    "Error al buscar el producto en la transacción.", e);
         }
 
         return null;
@@ -128,16 +121,12 @@ public class ProductoDAOImpl implements ProductoDAO {
 
         List<Producto> productos = new ArrayList<>();
 
-        try (Connection conexion =
-                     ConexionDB.obtenerConexion();
-             PreparedStatement statement =
-                     conexion.prepareStatement(sql);
-             ResultSet resultado =
-                     statement.executeQuery()) {
+        try (Connection conexion = ConexionDB.obtenerConexion();
+             PreparedStatement statement = conexion.prepareStatement(sql);
+             ResultSet resultado = statement.executeQuery()) {
 
             while (resultado.next()) {
-                productos.add(
-                        convertirProducto(resultado));
+                productos.add(convertirProducto(resultado));
             }
 
         } catch (SQLException e) {
@@ -151,12 +140,8 @@ public class ProductoDAOImpl implements ProductoDAO {
     @Override
     public boolean actualizar(Producto producto) {
 
-        try (Connection conexion =
-                     ConexionDB.obtenerConexion()) {
-
-            return actualizar(
-                    producto,
-                    conexion);
+        try (Connection conexion = ConexionDB.obtenerConexion()) {
+            return actualizar(producto, conexion);
 
         } catch (SQLException e) {
             throw new RuntimeException(
@@ -185,16 +170,13 @@ public class ProductoDAOImpl implements ProductoDAO {
         try (PreparedStatement statement =
                      conexion.prepareStatement(sql)) {
 
-            prepararActualizacion(
-                    producto,
-                    statement);
+            prepararActualizacion(producto, statement);
 
             return statement.executeUpdate() > 0;
 
         } catch (SQLException e) {
             throw new RuntimeException(
-                    "Error al actualizar el producto "
-                    + "en la transacción.", e);
+                    "Error al actualizar el producto en la transacción.", e);
         }
     }
 
@@ -203,54 +185,24 @@ public class ProductoDAOImpl implements ProductoDAO {
             PreparedStatement statement)
             throws SQLException {
 
-        statement.setString(
-                1,
-                producto.getCodigo());
-
-        statement.setString(
-                2,
-                producto.getNombre());
-
-        statement.setDouble(
-                3,
-                producto.getPrecioCompra());
-
-        statement.setDouble(
-                4,
-                producto.getPrecioVenta());
-
-        statement.setInt(
-                5,
-                producto.getStockActual());
-
-        statement.setInt(
-                6,
-                producto.getStockMinimo());
-
-        statement.setBoolean(
-                7,
-                producto.isEstado());
-
-        statement.setInt(
-                8,
-                producto.getIdCategoria());
-
-        statement.setInt(
-                9,
-                producto.getIdProducto());
+        statement.setString(1, producto.getCodigo());
+        statement.setString(2, producto.getNombre());
+        statement.setDouble(3, producto.getPrecioCompra());
+        statement.setDouble(4, producto.getPrecioVenta());
+        statement.setInt(5, producto.getStockActual());
+        statement.setInt(6, producto.getStockMinimo());
+        statement.setBoolean(7, producto.isEstado());
+        statement.setInt(8, producto.getIdCategoria());
+        statement.setInt(9, producto.getIdProducto());
     }
 
     @Override
     public boolean eliminar(int idProducto) {
 
-        String sql =
-                "DELETE FROM PRODUCTO "
-                + "WHERE id_producto = ?";
+        String sql = "DELETE FROM PRODUCTO WHERE id_producto = ?";
 
-        try (Connection conexion =
-                     ConexionDB.obtenerConexion();
-             PreparedStatement statement =
-                     conexion.prepareStatement(sql)) {
+        try (Connection conexion = ConexionDB.obtenerConexion();
+             PreparedStatement statement = conexion.prepareStatement(sql)) {
 
             statement.setInt(1, idProducto);
 
@@ -262,38 +214,20 @@ public class ProductoDAOImpl implements ProductoDAO {
         }
     }
 
-    private Producto convertirProducto(
-            ResultSet resultado)
+    private Producto convertirProducto(ResultSet resultado)
             throws SQLException {
 
         Producto producto = new Producto();
 
-        producto.setIdProducto(
-                resultado.getInt("id_producto"));
-
-        producto.setCodigo(
-                resultado.getString("codigo"));
-
-        producto.setNombre(
-                resultado.getString("nombre"));
-
-        producto.setPrecioCompra(
-                resultado.getDouble("precio_compra"));
-
-        producto.setPrecioVenta(
-                resultado.getDouble("precio_venta"));
-
-        producto.setStockActual(
-                resultado.getInt("stock_actual"));
-
-        producto.setStockMinimo(
-                resultado.getInt("stock_minimo"));
-
-        producto.setEstado(
-                resultado.getBoolean("estado"));
-
-        producto.setIdCategoria(
-                resultado.getInt("id_categoria"));
+        producto.setIdProducto(resultado.getInt("id_producto"));
+        producto.setCodigo(resultado.getString("codigo"));
+        producto.setNombre(resultado.getString("nombre"));
+        producto.setPrecioCompra(resultado.getDouble("precio_compra"));
+        producto.setPrecioVenta(resultado.getDouble("precio_venta"));
+        producto.setStockActual(resultado.getInt("stock_actual"));
+        producto.setStockMinimo(resultado.getInt("stock_minimo"));
+        producto.setEstado(resultado.getBoolean("estado"));
+        producto.setIdCategoria(resultado.getInt("id_categoria"));
 
         return producto;
     }

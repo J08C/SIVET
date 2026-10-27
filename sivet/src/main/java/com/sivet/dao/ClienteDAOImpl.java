@@ -1,6 +1,8 @@
+
 package com.sivet.dao;
 
 import com.sivet.model.Cliente;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,7 +12,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-// Implementación de ClienteDAO
+@Repository
 public class ClienteDAOImpl implements ClienteDAO {
 
     // Guardar cliente
@@ -35,7 +37,7 @@ public class ClienteDAOImpl implements ClienteDAO {
 
             statement.executeUpdate();
 
-            // Obtener ID generado por PostgreSQL
+            // Obtener el ID generado por PostgreSQL
             try (ResultSet claves = statement.getGeneratedKeys()) {
 
                 if (claves.next()) {
@@ -44,7 +46,6 @@ public class ClienteDAOImpl implements ClienteDAO {
             }
 
         } catch (SQLException e) {
-
             throw new RuntimeException(
                     "Error al guardar el cliente.",
                     e
@@ -76,7 +77,6 @@ public class ClienteDAOImpl implements ClienteDAO {
             }
 
         } catch (SQLException e) {
-
             throw new RuntimeException(
                     "Error al buscar el cliente.",
                     e
@@ -104,12 +104,10 @@ public class ClienteDAOImpl implements ClienteDAO {
              ResultSet resultado = statement.executeQuery()) {
 
             while (resultado.next()) {
-
                 clientes.add(convertirCliente(resultado));
             }
 
         } catch (SQLException e) {
-
             throw new RuntimeException(
                     "Error al listar los clientes.",
                     e
@@ -144,7 +142,6 @@ public class ClienteDAOImpl implements ClienteDAO {
             statement.executeUpdate();
 
         } catch (SQLException e) {
-
             throw new RuntimeException(
                     "Error al actualizar el cliente.",
                     e
@@ -156,8 +153,7 @@ public class ClienteDAOImpl implements ClienteDAO {
     @Override
     public void eliminar(int idCliente) {
 
-        String sql =
-                "DELETE FROM CLIENTE WHERE id_cliente = ?";
+        String sql = "DELETE FROM CLIENTE WHERE id_cliente = ?";
 
         try (Connection conexion = ConexionDB.obtenerConexion();
              PreparedStatement statement = conexion.prepareStatement(sql)) {
@@ -167,7 +163,6 @@ public class ClienteDAOImpl implements ClienteDAO {
             statement.executeUpdate();
 
         } catch (SQLException e) {
-
             throw new RuntimeException(
                     "Error al eliminar el cliente.",
                     e

@@ -1,6 +1,8 @@
+
 package com.sivet.dao;
 
 import com.sivet.model.Compra;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class CompraDAOImpl implements CompraDAO {
 
     @Override
@@ -36,24 +39,17 @@ public class CompraDAOImpl implements CompraDAO {
             ejecutarGuardar(compra, statement);
 
         } catch (SQLException e) {
-
             throw new RuntimeException(
                     "Error al guardar la compra.", e);
         }
     }
 
-    // =========================================================
-    // GUARDAR DENTRO DE UNA TRANSACCIÓN
-    // =========================================================
-
-    public void guardar(
-            Compra compra,
-            Connection conexion) {
+    // Guardar dentro de una transacción
+    public void guardar(Compra compra, Connection conexion) {
 
         /*
-         * IMPORTANTE:
-         * No enviamos fecha desde Java.
-         * PostgreSQL utiliza DEFAULT CURRENT_TIMESTAMP.
+         * PostgreSQL utiliza DEFAULT CURRENT_TIMESTAMP
+         * para asignar la fecha de la compra.
          */
         String sql = """
                 INSERT INTO COMPRA
@@ -69,51 +65,31 @@ public class CompraDAOImpl implements CompraDAO {
             ejecutarGuardar(compra, statement);
 
         } catch (SQLException e) {
-
             throw new RuntimeException(
-                    "Error al guardar la compra "
-                    + "en la transacción.", e);
+                    "Error al guardar la compra en la transacción.",
+                    e);
         }
     }
 
-    // =========================================================
-    // EJECUTAR GUARDADO
-    // =========================================================
-
+    // Ejecutar guardado
     private void ejecutarGuardar(
             Compra compra,
-            PreparedStatement statement)
-            throws SQLException {
+            PreparedStatement statement) throws SQLException {
 
-        statement.setDouble(
-                1,
-                compra.getTotal());
-
-        statement.setInt(
-                2,
-                compra.getIdUsuario());
-
-        statement.setInt(
-                3,
-                compra.getIdProveedor());
+        statement.setDouble(1, compra.getTotal());
+        statement.setInt(2, compra.getIdUsuario());
+        statement.setInt(3, compra.getIdProveedor());
 
         statement.executeUpdate();
 
-        try (ResultSet claves =
-                     statement.getGeneratedKeys()) {
-
+        try (ResultSet claves = statement.getGeneratedKeys()) {
             if (claves.next()) {
-
-                compra.setIdCompra(
-                        claves.getInt(1));
+                compra.setIdCompra(claves.getInt(1));
             }
         }
     }
 
-    // =========================================================
-    // BUSCAR POR ID
-    // =========================================================
-
+    // Buscar por ID
     @Override
     public Compra buscarPorId(int idCompra) {
 
@@ -127,24 +103,19 @@ public class CompraDAOImpl implements CompraDAO {
                 WHERE id_compra = ?
                 """;
 
-        try (Connection conexion =
-                     ConexionDB.obtenerConexion();
+        try (Connection conexion = ConexionDB.obtenerConexion();
              PreparedStatement statement =
                      conexion.prepareStatement(sql)) {
 
             statement.setInt(1, idCompra);
 
-            try (ResultSet resultado =
-                         statement.executeQuery()) {
-
+            try (ResultSet resultado = statement.executeQuery()) {
                 if (resultado.next()) {
-
                     return convertirCompra(resultado);
                 }
             }
 
         } catch (SQLException e) {
-
             throw new RuntimeException(
                     "Error al buscar la compra.", e);
         }
@@ -152,10 +123,7 @@ public class CompraDAOImpl implements CompraDAO {
         return null;
     }
 
-    // =========================================================
-    // LISTAR
-    // =========================================================
-
+    // Listar compras
     @Override
     public List<Compra> listar() {
 
@@ -169,24 +137,18 @@ public class CompraDAOImpl implements CompraDAO {
                 ORDER BY id_compra
                 """;
 
-        List<Compra> compras =
-                new ArrayList<>();
+        List<Compra> compras = new ArrayList<>();
 
-        try (Connection conexion =
-                     ConexionDB.obtenerConexion();
+        try (Connection conexion = ConexionDB.obtenerConexion();
              PreparedStatement statement =
                      conexion.prepareStatement(sql);
-             ResultSet resultado =
-                     statement.executeQuery()) {
+             ResultSet resultado = statement.executeQuery()) {
 
             while (resultado.next()) {
-
-                compras.add(
-                        convertirCompra(resultado));
+                compras.add(convertirCompra(resultado));
             }
 
         } catch (SQLException e) {
-
             throw new RuntimeException(
                     "Error al listar las compras.", e);
         }
@@ -194,10 +156,7 @@ public class CompraDAOImpl implements CompraDAO {
         return compras;
     }
 
-    // =========================================================
-    // ACTUALIZAR
-    // =========================================================
-
+    // Actualizar compra
     @Override
     public void actualizar(Compra compra) {
 
@@ -210,98 +169,69 @@ public class CompraDAOImpl implements CompraDAO {
                 WHERE id_compra = ?
                 """;
 
-        try (Connection conexion =
-                     ConexionDB.obtenerConexion();
+        try (Connection conexion = ConexionDB.obtenerConexion();
              PreparedStatement statement =
                      conexion.prepareStatement(sql)) {
 
             LocalDateTime fecha = compra.getFecha();
 
-            /*
-             * Para actualizar sí necesitamos enviar una fecha.
-             * Si viene null, usamos la fecha actual.
-             */
             if (fecha == null) {
                 fecha = LocalDateTime.now();
                 compra.setFecha(fecha);
             }
 
             statement.setTimestamp(
-                    1,
-                    Timestamp.valueOf(fecha));
-
+                    1, Timestamp.valueOf(fecha));
             statement.setDouble(
-                    2,
-                    compra.getTotal());
-
+                    2, compra.getTotal());
             statement.setInt(
-                    3,
-                    compra.getIdUsuario());
-
+                    3, compra.getIdUsuario());
             statement.setInt(
-                    4,
-                    compra.getIdProveedor());
-
+                    4, compra.getIdProveedor());
             statement.setInt(
-                    5,
-                    compra.getIdCompra());
+                    5, compra.getIdCompra());
 
             statement.executeUpdate();
 
         } catch (SQLException e) {
-
             throw new RuntimeException(
                     "Error al actualizar la compra.", e);
         }
     }
 
-    // =========================================================
-    // ELIMINAR
-    // =========================================================
-
+    // Eliminar compra
     @Override
     public void eliminar(int idCompra) {
 
         String sql =
-                "DELETE FROM COMPRA "
-                + "WHERE id_compra = ?";
+                "DELETE FROM COMPRA WHERE id_compra = ?";
 
-        try (Connection conexion =
-                     ConexionDB.obtenerConexion();
+        try (Connection conexion = ConexionDB.obtenerConexion();
              PreparedStatement statement =
                      conexion.prepareStatement(sql)) {
 
             statement.setInt(1, idCompra);
-
             statement.executeUpdate();
 
         } catch (SQLException e) {
-
             throw new RuntimeException(
                     "Error al eliminar la compra.", e);
         }
     }
 
-    // =========================================================
-    // CONVERTIR RESULTSET A COMPRA
-    // =========================================================
-
+    // Convertir ResultSet a Compra
     private Compra convertirCompra(
-            ResultSet resultado)
-            throws SQLException {
+            ResultSet resultado) throws SQLException {
 
         Compra compra = new Compra();
 
         compra.setIdCompra(
                 resultado.getInt("id_compra"));
 
-        Timestamp fecha =
-                resultado.getTimestamp("fecha");
+        Timestamp fecha = resultado.getTimestamp("fecha");
 
         if (fecha != null) {
-
-            compra.setFecha(
-                    fecha.toLocalDateTime());
+            compra.setFecha(fecha.toLocalDateTime());
         }
 
         compra.setTotal(

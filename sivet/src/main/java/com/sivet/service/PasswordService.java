@@ -1,10 +1,13 @@
+
 package com.sivet.service;
 
 import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.stereotype.Service;
 
 /**
  * Servicio encargado de cifrar y verificar contraseñas.
  */
+@Service
 public class PasswordService {
 
     /**

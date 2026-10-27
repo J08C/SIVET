@@ -1,15 +1,10 @@
+
 package com.sivet.controller;
 
 import com.sivet.dao.ClienteDAO;
-import com.sivet.dao.ClienteDAOImpl;
 import com.sivet.dao.DetalleVentaDAO;
-import com.sivet.dao.DetalleVentaDAOImpl;
 import com.sivet.dao.ProductoDAO;
-import com.sivet.dao.ProductoDAOImpl;
 import com.sivet.dao.UsuarioDAO;
-import com.sivet.dao.UsuarioDAOImpl;
-import com.sivet.dao.VentaDAO;
-import com.sivet.dao.VentaDAOImpl;
 import com.sivet.model.Cliente;
 import com.sivet.model.DetalleVenta;
 import com.sivet.model.Producto;
@@ -39,60 +34,48 @@ public class VentaWebController {
     private final UsuarioDAO usuarioDAO;
     private final ClienteDAO clienteDAO;
 
-    public VentaWebController() {
+    public VentaWebController(
+            VentaService ventaService,
+            ProductoDAO productoDAO,
+            DetalleVentaDAO detalleVentaDAO,
+            UsuarioDAO usuarioDAO,
+            ClienteDAO clienteDAO) {
 
-        VentaDAO ventaDAO = new VentaDAOImpl();
-        this.productoDAO = new ProductoDAOImpl();
-        this.detalleVentaDAO = new DetalleVentaDAOImpl();
-        this.usuarioDAO = new UsuarioDAOImpl();
-        this.clienteDAO = new ClienteDAOImpl();
-
-        this.ventaService = new VentaService(
-                ventaDAO,
-                productoDAO
-        );
+        this.ventaService = ventaService;
+        this.productoDAO = productoDAO;
+        this.detalleVentaDAO = detalleVentaDAO;
+        this.usuarioDAO = usuarioDAO;
+        this.clienteDAO = clienteDAO;
     }
 
     @GetMapping("/ventas")
     public String listarVentas(Model model) {
-
-        model.addAttribute(
-                "ventas",
-                ventaService.listarVentas()
-        );
-
+        model.addAttribute("ventas", ventaService.listarVentas());
         return "ventas";
     }
 
-    // Mostrar formulario de nueva venta
     @GetMapping("/ventas/nueva")
     public String mostrarFormularioVenta(Model model) {
-
         model.addAttribute("productos", productoDAO.listar());
         model.addAttribute("venta", new Venta());
-
         return "venta-form";
     }
 
-    // Guardar nueva venta usando el usuario de la sesión
     @PostMapping("/ventas/guardar")
     public String guardarVenta(
             @RequestParam("idProducto") int idProducto,
             @RequestParam("cantidad") int cantidad,
             @RequestParam("precioUnitario") double precioUnitario,
-            @RequestParam(value = "idCliente", required = false)
-                    Integer idCliente,
+            @RequestParam(value = "idCliente", required = false) Integer idCliente,
             HttpSession session,
             Model model) {
 
         Usuario usuario = (Usuario) session.getAttribute("usuario");
 
-        // Verificar que exista una sesión autenticada.
         if (usuario == null) {
             return "redirect:/login";
         }
 
-        // Validaciones básicas.
         if (idProducto <= 0 || cantidad <= 0 || precioUnitario <= 0) {
             model.addAttribute(
                     "error",
@@ -100,7 +83,6 @@ public class VentaWebController {
             );
             model.addAttribute("productos", productoDAO.listar());
             model.addAttribute("venta", new Venta());
-
             return "venta-form";
         }
 
@@ -110,7 +92,6 @@ public class VentaWebController {
                 Math.round(precioUnitario * cantidad * 100.0) / 100.0
         );
 
-        // Usar el ID del usuario que inició sesión.
         venta.setIdUsuario(usuario.getIdUsuario());
 
         if (idCliente != null && idCliente > 0) {
@@ -138,7 +119,6 @@ public class VentaWebController {
         return "venta-form";
     }
 
-    // Ver detalle de una venta
     @GetMapping("/ventas/{id}/detalle")
     public String verDetalleVenta(
             @PathVariable("id") int idVenta,
@@ -157,9 +137,7 @@ public class VentaWebController {
         Map<Integer, String> nombresUsuarios = new HashMap<>();
         Map<Integer, String> nombresClientes = new HashMap<>();
 
-        Usuario usuario = usuarioDAO.buscarPorId(
-                venta.getIdUsuario()
-        );
+        Usuario usuario = usuarioDAO.buscarPorId(venta.getIdUsuario());
 
         if (usuario != null) {
             nombresUsuarios.put(
@@ -169,9 +147,7 @@ public class VentaWebController {
         }
 
         if (venta.getIdCliente() != null) {
-            Cliente cliente = clienteDAO.buscarPorId(
-                    venta.getIdCliente()
-            );
+            Cliente cliente = clienteDAO.buscarPorId(venta.getIdCliente());
 
             if (cliente != null) {
                 nombresClientes.put(
